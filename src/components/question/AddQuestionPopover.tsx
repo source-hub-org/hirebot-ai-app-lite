@@ -3,7 +3,6 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectTrigger,
@@ -12,79 +11,216 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Plus } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getTopics } from '@/services/topics.service'
+import { getLanguages } from '@/services/languages.service'
+import { getPositions } from '@/services/positions.service'
+import { Topic, Language, Position } from '@/types/api'
 
 export default function AddQuestionPopover() {
   const [open, setOpen] = useState(false)
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [positions, setPositions] = useState<Position[]>([])
+  const [isLoading, setIsLoading] = useState({
+    topics: false,
+    languages: false,
+    positions: false,
+  })
+
+  // Selected values
+  const [selectedTopic, setSelectedTopic] = useState<string>('')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('')
+  const [selectedPosition, setSelectedPosition] = useState<string>('')
+  const [pageSize, setPageSize] = useState<string>('')
+
+  // Fetch data when popover opens
+  useEffect(() => {
+    if (open) {
+      fetchData()
+    }
+  }, [open])
+
+  const fetchData = async () => {
+    try {
+      setIsLoading({ topics: true, languages: true, positions: true })
+
+      // Fetch topics
+      const topicsData = await getTopics()
+      setTopics(topicsData)
+
+      // Fetch languages
+      const languagesData = await getLanguages({ limit: 100 })
+      setLanguages(languagesData.languages)
+
+      // Fetch positions
+      const positionsData = await getPositions({ limit: 100 })
+      setPositions(positionsData.positions)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setIsLoading({ topics: false, languages: false, positions: false })
+    }
+  }
+
+  const handleAddQuestions = () => {
+    // Prepare data for API call
+    const formData = {
+      topic: selectedTopic,
+      language: selectedLanguage,
+      position: selectedPosition,
+      pageSize: parseInt(pageSize),
+    }
+
+    console.log('Form data:', formData)
+    // Here you would call your API to add questions
+
+    // Close the popover
+    setOpen(false)
+  }
+
+  // Handle clicks inside the popover to prevent it from closing when interacting with MultiSelect
+  const handlePopoverClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+  }
+
+  // Handle popover open/close manually
+  const handleOpenChange = (isOpen: boolean) => {
+    // Set the open state based on the isOpen parameter
+    // This will handle both opening and closing
+    setOpen(isOpen)
+  }
+
+  // Handle cancel button click
+  const handleCancel = () => {
+    setOpen(false)
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button className="fixed bottom-4 right-4 rounded cursor-pointer" variant="default">
+        <Button
+          className="fixed bottom-4 right-4 rounded cursor-pointer"
+          variant="default"
+          onClick={() => setOpen(true)}
+        >
           <Plus className="h-4 w-4" />
-          {/* Thêm câu hỏi */}
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[400px] space-y-4">
-        <div>
-          <Label>Chọn topic (nhiều)</Label>
-          <div className="flex flex-wrap gap-2 mt-1">
-            {['HTML', 'CSS', 'React', 'Node.js'].map(topic => (
-              <div key={topic} className="flex items-center gap-2">
-                <Checkbox id={topic} />
-                <label htmlFor={topic}>{topic}</label>
-              </div>
-            ))}
+      <PopoverContent
+        className="w-[400px] space-y-4 mr-[20px] mb-[15px]"
+        sideOffset={5}
+        onClick={handlePopoverClick}
+      >
+        <div className="space-y-2">
+          <h4 className="font-medium leading-none">More questions</h4>
+          <p className="text-sm text-muted-foreground">Use filters to find and add questions.</p>
+        </div>
+
+        <div className="flex items-center">
+          <div className="w-1/3">
+            <Label>Select Topic</Label>
+          </div>
+          <div className="w-2/3">
+            <Select
+              value={selectedTopic}
+              onValueChange={setSelectedTopic}
+              disabled={isLoading.topics}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={isLoading.topics ? 'Loading...' : 'Select topic'} />
+              </SelectTrigger>
+              <SelectContent>
+                {topics.map(topic => (
+                  <SelectItem key={topic._id || topic.title} value={topic._id || topic.title}>
+                    {topic.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <div>
-          <Label>Chọn language (nhiều)</Label>
-          <div className="flex flex-wrap gap-2 mt-1">
-            {['JavaScript', 'Python', 'Go'].map(lang => (
-              <div key={lang} className="flex items-center gap-2">
-                <Checkbox id={lang} />
-                <label htmlFor={lang}>{lang}</label>
-              </div>
-            ))}
+        <div className="flex items-center">
+          <div className="w-1/3">
+            <Label>Select Language</Label>
+          </div>
+          <div className="w-2/3">
+            <Select
+              value={selectedLanguage}
+              onValueChange={setSelectedLanguage}
+              disabled={isLoading.languages}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={isLoading.languages ? 'Loading...' : 'Select language'} />
+              </SelectTrigger>
+              <SelectContent>
+                {languages.map(language => (
+                  <SelectItem
+                    key={language._id || language.name}
+                    value={language._id || language.name}
+                  >
+                    {language.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <div>
-          <Label>Chọn position (1)</Label>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn vị trí" />
-            </SelectTrigger>
-            <SelectContent>
-              {['Frontend', 'Backend', 'Fullstack'].map(p => (
-                <SelectItem key={p} value={p}>
-                  {p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex items-center">
+          <div className="w-1/3">
+            <Label>Select Position</Label>
+          </div>
+          <div className="w-2/3">
+            <Select
+              value={selectedPosition}
+              onValueChange={setSelectedPosition}
+              disabled={isLoading.positions}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={isLoading.positions ? 'Loading...' : 'Select position'} />
+              </SelectTrigger>
+              <SelectContent>
+                {positions.map(position => (
+                  <SelectItem
+                    key={position._id || position.slug}
+                    value={position._id || position.slug}
+                  >
+                    {position.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div>
-          <Label>Page size</Label>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn số câu hỏi" />
-            </SelectTrigger>
-            <SelectContent>
-              {[10, 20, 50, 100].map(size => (
-                <SelectItem key={size} value={size.toString()}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex items-center">
+          <div className="w-1/3">
+            <Label>Page size</Label>
+          </div>
+          <div className="w-2/3">
+            <Select value={pageSize} onValueChange={setPageSize}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select number of questions" />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 50, 100].map(size => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="text-right">
-          <Button onClick={() => setOpen(false)}>Thêm câu hỏi</Button>
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button onClick={handleAddQuestions}>Add Questions</Button>
         </div>
       </PopoverContent>
     </Popover>

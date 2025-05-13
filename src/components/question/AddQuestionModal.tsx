@@ -11,13 +11,13 @@ export default function AddQuestionModal({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Thêm câu hỏi</DialogTitle>
+          <DialogTitle>Add Question</DialogTitle>
         </DialogHeader>
 
-        {/* Nội dung form modal */}
+        {/* Modal form content */}
         <div className="space-y-4">{/* TODO: Filter topic, language, position, page_size */}</div>
 
-        <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Thêm câu hỏi</button>
+        <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Add Question</button>
       </DialogContent>
     </Dialog>
   )

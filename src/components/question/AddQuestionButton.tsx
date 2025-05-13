@@ -13,7 +13,7 @@ export default function AddQuestionButton() {
     <>
       <Button className="fixed bottom-6 right-6 z-50" onClick={() => setOpen(true)}>
         <Plus className="mr-2" size={16} />
-        Thêm câu hỏi
+        Add Question
       </Button>
       <AddQuestionModal open={open} onClose={() => setOpen(false)} />
     </>
