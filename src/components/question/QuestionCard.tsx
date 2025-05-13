@@ -15,7 +15,7 @@ export default function QuestionCard() {
           <input type="checkbox" /> Đáp án B
         </label>
       </div>
-      <div className="flex items-center gap-2">        
+      <div className="flex items-center gap-2">
         <Switch />
       </div>
       <Textarea placeholder="Nhập câu trả lời tự do..." />

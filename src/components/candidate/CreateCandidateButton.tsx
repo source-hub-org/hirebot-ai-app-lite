@@ -4,7 +4,7 @@ import { PlusCircle } from 'lucide-react'
 
 export default function CreateCandidateButton({ disabled }: { disabled: boolean }) {
   return (
-    <Button variant="outline" disabled={disabled}>
+    <Button className="cursor-pointer" variant="outline" disabled={disabled}>
       <PlusCircle className="mr-2" size={16} />
       Tạo mới
     </Button>

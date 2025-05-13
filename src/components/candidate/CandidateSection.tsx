@@ -11,12 +11,14 @@ export default function CandidateSection() {
 
   return (
     <section className="p-4 border-b">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-start items-start gap-x-5 w-full">
         <CandidateDropdown disabled={disabled} />
         <CreateCandidateButton disabled={disabled} />
-      </div>
-      <div className="mt-4">
-        <Button disabled={disabled} onClick={() => setDisabled(true)}>
+        <Button
+          className="ml-auto cursor-pointer"
+          disabled={disabled}
+          onClick={() => setDisabled(true)}
+        >
           Bắt đầu bài thi
         </Button>
       </div>

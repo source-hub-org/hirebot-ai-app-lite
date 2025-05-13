@@ -20,9 +20,9 @@ export default function AddQuestionPopover() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="fixed bottom-4 right-4" variant="default">
-          <Plus className="mr-2 h-4 w-4" />
-          Thêm câu hỏi
+        <Button className="fixed bottom-4 right-4 rounded cursor-pointer" variant="default">
+          <Plus className="h-4 w-4" />
+          {/* Thêm câu hỏi */}
         </Button>
       </PopoverTrigger>
 

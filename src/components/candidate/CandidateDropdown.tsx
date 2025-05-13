@@ -12,10 +12,9 @@ export default function CandidateDropdown({ disabled }: { disabled: boolean }) {
   const candidates = ['Nguyễn Văn A', 'Trần Thị B', 'Lê Văn C']
 
   return (
-    <div className="w-2/3">
-      <label className="block mb-1 font-medium">Chọn ứng viên</label>
+    <div className="min-w-[15rem]">
       <Select disabled={disabled}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Chọn ứng viên" />
         </SelectTrigger>
         <SelectContent>
