@@ -22,7 +22,7 @@ export async function searchQuestions(params: QuestionSearchParams = {}): Promis
   try {
     const queryString = buildQueryString(params)
     const response = await api.get<PaginatedResponse<Question[]>>(
-      `/api/questions/search${queryString}`
+      `/api/proxy/questions/search${queryString}`
     )
 
     return {
@@ -125,6 +125,33 @@ export async function generateQuestions(params: {
   }
 }
 
+/**
+ * Submits answers for a candidate
+ *
+ * @param submission - Submission data containing candidate_id and answers
+ * @returns Promise resolving to the submission result
+ */
+export async function submitAnswers(submission: {
+  candidate_id: string
+  answers: Array<{
+    question_id: string
+    answer: number | null
+    other: string
+    point: number
+    is_skip: number
+  }>
+}): Promise<{ message: string; score?: number }> {
+  try {
+    const response = await api.post<ApiResponse<{ message: string; score: number }>>(
+      '/api/proxy/submissions',
+      submission
+    )
+    return handleSuccessResponse(response)
+  } catch (error) {
+    return handleErrorResponse(error)
+  }
+}
+
 const questionService = {
   searchQuestions,
   getQuestionById,
@@ -132,6 +159,7 @@ const questionService = {
   updateQuestion,
   deleteQuestion,
   generateQuestions,
+  submitAnswers,
 }
 
 export default questionService

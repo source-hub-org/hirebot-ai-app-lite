@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react'
 import { getTopics } from '@/services/topics.service'
 import { getLanguages } from '@/services/languages.service'
 import { getPositions } from '@/services/positions.service'
+import { searchQuestions } from '@/services/questions.service'
 import { Topic, Language, Position } from '@/types/api'
 
 export default function AddQuestionPopover() {
@@ -63,20 +64,32 @@ export default function AddQuestionPopover() {
     }
   }
 
-  const handleAddQuestions = () => {
+  const handleAddQuestions = async () => {
     // Prepare data for API call
     const formData = {
       topic: selectedTopic,
       language: selectedLanguage,
       position: selectedPosition,
-      pageSize: parseInt(pageSize),
+      page_size: parseInt(pageSize),
     }
 
     console.log('Form data:', formData)
-    // Here you would call your API to add questions
 
-    // Close the popover
-    setOpen(false)
+    try {
+      // Call the searchQuestions API
+      const { questions } = await searchQuestions(formData)
+
+      // Use a custom event to pass the questions to the QuestionList component
+      const event = new CustomEvent('questionsLoaded', {
+        detail: { questions },
+      })
+      window.dispatchEvent(event)
+
+      // Close the popover
+      setOpen(false)
+    } catch (error) {
+      console.error('Error searching questions:', error)
+    }
   }
 
   // Handle clicks inside the popover to prevent it from closing when interacting with MultiSelect
