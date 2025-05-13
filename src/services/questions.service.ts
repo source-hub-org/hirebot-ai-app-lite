@@ -42,7 +42,7 @@ export async function searchQuestions(params: QuestionSearchParams = {}): Promis
  */
 export async function getQuestionById(id: string): Promise<Question> {
   try {
-    const response = await api.get<ApiResponse<Question>>(`/api/questions/${id}`)
+    const response = await api.get<ApiResponse<Question>>(`/api/proxy/questions/${id}`)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -59,7 +59,7 @@ export async function createQuestion(
   question: Omit<Question, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Question> {
   try {
-    const response = await api.post<ApiResponse<Question>>('/api/questions', question)
+    const response = await api.post<ApiResponse<Question>>('/api/proxy/questions', question)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -78,7 +78,7 @@ export async function updateQuestion(
   question: Partial<Omit<Question, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Question> {
   try {
-    const response = await api.put<ApiResponse<Question>>(`/api/questions/${id}`, question)
+    const response = await api.put<ApiResponse<Question>>(`/api/proxy/questions/${id}`, question)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -93,7 +93,9 @@ export async function updateQuestion(
  */
 export async function deleteQuestion(id: string): Promise<{ message: string }> {
   try {
-    const response = await api.delete<ApiResponse<{ message: string }>>(`/api/questions/${id}`)
+    const response = await api.delete<ApiResponse<{ message: string }>>(
+      `/api/proxy/questions/${id}`
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -113,7 +115,10 @@ export async function generateQuestions(params: {
   count?: number
 }): Promise<Question[]> {
   try {
-    const response = await api.post<ApiResponse<Question[]>>('/api/questions/generate', params)
+    const response = await api.post<ApiResponse<Question[]>>(
+      '/api/proxy/questions/generate',
+      params
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

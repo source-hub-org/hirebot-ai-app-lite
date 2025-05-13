@@ -120,6 +120,21 @@ export interface Candidate {
   email: string
   phone_number: string
   interview_level: 'intern' | 'fresher' | 'junior' | 'middle' | 'senior' | 'lead'
+  gender?: string
+  birthday?: string
+  location?: string
+  education_level?: string
+  major?: string
+  years_of_experience?: number
+  current_position?: string
+  skills?: string[]
+  programming_languages?: string[]
+  preferred_stack?: string
+  assigned_topics?: string[]
+  cv_url?: string
+  portfolio_url?: string
+  linkedin_url?: string
+  status?: string
   createdAt?: string
   updatedAt?: string
 }
@@ -183,5 +198,25 @@ export interface LanguageQueryParams {
   page?: number
   limit?: number
   sort_by?: string
+  sort_direction?: 'asc' | 'desc'
+}
+
+/**
+ * Query parameters for candidates
+ */
+export interface CandidateQueryParams {
+  name?: string
+  email?: string
+  status?: string
+  interview_level?: 'intern' | 'fresher' | 'junior' | 'middle' | 'senior' | 'lead'
+  skills?: string | string[]
+  programming_languages?: string | string[]
+  preferred_stack?: string
+  years_of_experience?: number
+  current_position?: string
+  location?: string
+  page?: number
+  page_size?: number
+  sort_by?: 'full_name' | 'email' | 'createdAt' | 'updatedAt' | 'interview_level'
   sort_direction?: 'asc' | 'desc'
 }

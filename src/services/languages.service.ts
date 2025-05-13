@@ -21,7 +21,9 @@ export async function getLanguages(params: LanguageQueryParams = {}): Promise<{
 }> {
   try {
     const queryString = buildQueryString(params)
-    const response = await api.get<PaginatedResponse<Language[]>>(`/api/languages${queryString}`)
+    const response = await api.get<PaginatedResponse<Language[]>>(
+      `/api/proxy/languages${queryString}`
+    )
 
     return {
       languages: response.data.data,
@@ -40,7 +42,7 @@ export async function getLanguages(params: LanguageQueryParams = {}): Promise<{
  */
 export async function getLanguageById(id: string): Promise<Language> {
   try {
-    const response = await api.get<ApiResponse<Language>>(`/api/languages/${id}`)
+    const response = await api.get<ApiResponse<Language>>(`/api/proxy/languages/${id}`)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -57,7 +59,7 @@ export async function createLanguage(
   language: Omit<Language, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Language> {
   try {
-    const response = await api.post<ApiResponse<Language>>('/api/languages', language)
+    const response = await api.post<ApiResponse<Language>>('/api/proxy/languages', language)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -76,7 +78,7 @@ export async function updateLanguage(
   language: Partial<Omit<Language, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Language> {
   try {
-    const response = await api.put<ApiResponse<Language>>(`/api/languages/${id}`, language)
+    const response = await api.put<ApiResponse<Language>>(`/api/proxy/languages/${id}`, language)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -91,7 +93,9 @@ export async function updateLanguage(
  */
 export async function deleteLanguage(id: string): Promise<{ message: string }> {
   try {
-    const response = await api.delete<ApiResponse<{ message: string }>>(`/api/languages/${id}`)
+    const response = await api.delete<ApiResponse<{ message: string }>>(
+      `/api/proxy/languages/${id}`
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

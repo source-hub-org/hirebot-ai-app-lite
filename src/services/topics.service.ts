@@ -10,7 +10,7 @@ import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApi
  */
 export async function getTopics(): Promise<Topic[]> {
   try {
-    const response = await api.get<ApiResponse<Topic[]>>('/api/topics')
+    const response = await api.get<ApiResponse<Topic[]>>('/api/proxy/topics')
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -25,7 +25,7 @@ export async function getTopics(): Promise<Topic[]> {
  */
 export async function getTopicById(id: string): Promise<Topic> {
   try {
-    const response = await api.get<ApiResponse<Topic>>(`/api/topics/${id}`)
+    const response = await api.get<ApiResponse<Topic>>(`/api/proxy/topics/${id}`)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -42,7 +42,7 @@ export async function createTopic(
   topic: Omit<Topic, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Topic> {
   try {
-    const response = await api.post<ApiResponse<Topic>>('/api/topics', topic)
+    const response = await api.post<ApiResponse<Topic>>('/api/proxy/topics', topic)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -61,7 +61,7 @@ export async function updateTopic(
   topic: Partial<Omit<Topic, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Topic> {
   try {
-    const response = await api.put<ApiResponse<Topic>>(`/api/topics/${id}`, topic)
+    const response = await api.put<ApiResponse<Topic>>(`/api/proxy/topics/${id}`, topic)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -76,7 +76,7 @@ export async function updateTopic(
  */
 export async function deleteTopic(id: string): Promise<{ message: string }> {
   try {
-    const response = await api.delete<ApiResponse<{ message: string }>>(`/api/topics/${id}`)
+    const response = await api.delete<ApiResponse<{ message: string }>>(`/api/proxy/topics/${id}`)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

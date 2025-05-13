@@ -20,7 +20,9 @@ export async function getPositions(params: PositionQueryParams = {}): Promise<{
 }> {
   try {
     const queryString = buildQueryString(params)
-    const response = await api.get<PaginatedResponse<Position[]>>(`/api/positions${queryString}`)
+    const response = await api.get<PaginatedResponse<Position[]>>(
+      `/api/proxy/positions${queryString}`
+    )
 
     return {
       positions: response.data.data,
@@ -39,7 +41,7 @@ export async function getPositions(params: PositionQueryParams = {}): Promise<{
  */
 export async function getPositionById(id: string): Promise<Position> {
   try {
-    const response = await api.get<ApiResponse<Position>>(`/api/positions/${id}`)
+    const response = await api.get<ApiResponse<Position>>(`/api/proxy/positions/${id}`)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -56,7 +58,7 @@ export async function createPosition(
   position: Omit<Position, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Position> {
   try {
-    const response = await api.post<ApiResponse<Position>>('/api/positions', position)
+    const response = await api.post<ApiResponse<Position>>('/api/proxy/positions', position)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -75,7 +77,7 @@ export async function updatePosition(
   position: Partial<Omit<Position, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Position> {
   try {
-    const response = await api.put<ApiResponse<Position>>(`/api/positions/${id}`, position)
+    const response = await api.put<ApiResponse<Position>>(`/api/proxy/positions/${id}`, position)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -90,7 +92,9 @@ export async function updatePosition(
  */
 export async function deletePosition(id: string): Promise<{ message: string }> {
   try {
-    const response = await api.delete<ApiResponse<{ message: string }>>(`/api/positions/${id}`)
+    const response = await api.delete<ApiResponse<{ message: string }>>(
+      `/api/proxy/positions/${id}`
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

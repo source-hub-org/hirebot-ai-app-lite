@@ -1,0 +1,123 @@
+// src/components/candidate/CandidateList.tsx
+import { useState } from 'react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { CandidateQueryParams } from '@/types/api'
+import CandidateSearch from './CandidateSearch'
+import { useCandidates } from '@/hooks/useCandidates'
+
+export default function CandidateList() {
+  const [searchParams, setSearchParams] = useState<CandidateQueryParams>({
+    page: 1,
+    page_size: 10,
+    sort_by: 'full_name',
+    sort_direction: 'asc',
+  })
+
+  const { candidates, loading, error, pagination, fetchCandidates } = useCandidates(searchParams)
+
+  // Handle search
+  const handleSearch = (params: CandidateQueryParams) => {
+    setSearchParams(params)
+    fetchCandidates(params)
+  }
+
+  // Handle pagination
+  const handlePageChange = (newPage: number) => {
+    const updatedParams = { ...searchParams, page: newPage }
+    setSearchParams(updatedParams)
+    fetchCandidates(updatedParams)
+  }
+
+  // Format date for display
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A'
+    return new Date(dateString).toLocaleDateString()
+  }
+
+  return (
+    <div className="space-y-6">
+      <CandidateSearch onSearch={handleSearch} isLoading={loading} />
+
+      {error && (
+        <div className="p-4 border border-red-300 bg-red-50 text-red-800 rounded-md">{error}</div>
+      )}
+
+      <div className="border rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Level</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8">
+                  Loading candidates...
+                </TableCell>
+              </TableRow>
+            ) : candidates.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8">
+                  No candidates found
+                </TableCell>
+              </TableRow>
+            ) : (
+              candidates.map(candidate => (
+                <TableRow key={candidate._id}>
+                  <TableCell className="font-medium">{candidate.full_name}</TableCell>
+                  <TableCell>{candidate.email}</TableCell>
+                  <TableCell>{candidate.interview_level}</TableCell>
+                  <TableCell>{candidate.status || 'N/A'}</TableCell>
+                  <TableCell>{formatDate(candidate.createdAt)}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      {!loading && candidates.length > 0 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            Showing {candidates.length} of {pagination.total} candidates
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1 || loading}
+            >
+              Previous
+            </Button>
+            <span className="text-sm">
+              Page {pagination.page} of {pagination.total_pages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.total_pages || loading}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
