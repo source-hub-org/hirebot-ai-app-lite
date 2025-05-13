@@ -1,0 +1,4847 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HireBot AI API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for HireBot AI, a service responsible for generating, storing, and managing AI-powered technical interview quizzes for developer candidates.",
+    "contact": { "name": "HireBot AI Team" }
+  },
+  "servers": [
+    { "url": "http://localhost:8000", "description": "Nginx reverse proxy server" },
+    { "url": "http://localhost:3000", "description": "Development server" }
+  ],
+  "components": {
+    "schemas": {
+      "Position": {
+        "type": "object",
+        "required": ["slug", "title", "description", "instruction", "level"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Position ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Unique identifier for the position",
+            "example": "senior"
+          },
+          "title": {
+            "type": "string",
+            "description": "Position title",
+            "example": "Senior Developer"
+          },
+          "description": {
+            "type": "string",
+            "description": "Position description",
+            "example": "Has deep knowledge of system scalability, performance, security, and maintainability."
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Position instruction",
+            "example": "Focus on technical leadership, problem-solving in complex environments."
+          },
+          "level": { "type": "integer", "description": "Position level", "example": 5 },
+          "is_active": {
+            "type": "boolean",
+            "description": "Position active status",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "PositionList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Position" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 10 },
+              "page": { "type": "integer", "example": 1 },
+              "pageSize": { "type": "integer", "example": 10 },
+              "totalPages": { "type": "integer", "example": 1 }
+            }
+          }
+        }
+      },
+      "Language": {
+        "type": "object",
+        "required": [
+          "name",
+          "designed_by",
+          "first_appeared",
+          "paradigm",
+          "usage",
+          "popularity_rank",
+          "type_system"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Language ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "name": { "type": "string", "description": "Language name", "example": "JavaScript" },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly identifier",
+            "example": "javascript"
+          },
+          "designed_by": {
+            "type": "string",
+            "description": "Language designer",
+            "example": "Brendan Eich"
+          },
+          "first_appeared": {
+            "type": "integer",
+            "description": "Year of first appearance",
+            "example": 1995
+          },
+          "paradigm": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Programming paradigms",
+            "example": ["event-driven", "functional", "imperative"]
+          },
+          "usage": {
+            "type": "string",
+            "description": "Common usage areas",
+            "example": "Front-end web, back-end (Node.js), mobile apps"
+          },
+          "popularity_rank": {
+            "type": "integer",
+            "description": "Popularity ranking",
+            "example": 2
+          },
+          "type_system": {
+            "type": "string",
+            "description": "Type system characteristics",
+            "example": "dynamic, weak"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "LanguageList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Language" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 10 },
+              "page": { "type": "integer", "example": 1 },
+              "pageSize": { "type": "integer", "example": 10 },
+              "totalPages": { "type": "integer", "example": 1 }
+            }
+          }
+        }
+      },
+      "Topic": {
+        "type": "object",
+        "required": ["title", "difficulty", "popularity", "suitable_level", "description"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Topic ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "title": { "type": "string", "description": "Topic title", "example": "JavaScript" },
+          "difficulty": {
+            "type": "integer",
+            "description": "Topic difficulty level (1-5)",
+            "example": 3
+          },
+          "popularity": {
+            "type": "string",
+            "description": "Topic popularity",
+            "example": "high",
+            "enum": ["low", "medium", "high"]
+          },
+          "suitable_level": {
+            "type": "string",
+            "description": "Suitable experience level",
+            "example": "junior",
+            "enum": ["intern", "fresher", "junior", "middle", "senior", "lead"]
+          },
+          "description": {
+            "type": "string",
+            "description": "Topic description",
+            "example": "JavaScript is a programming language that is one of the core technologies of the World Wide Web."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "TopicList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Topic" } }
+        }
+      },
+      "Candidate": {
+        "type": "object",
+        "required": ["full_name", "email", "phone_number", "interview_level"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Candidate ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name of the candidate",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address",
+            "example": "john.doe@example.com"
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Phone number",
+            "example": "+1234567890"
+          },
+          "interview_level": {
+            "type": "string",
+            "description": "Interview level",
+            "example": "junior",
+            "enum": ["intern", "fresher", "junior", "middle", "senior", "lead"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "CandidateList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Candidate" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 10 },
+              "page": { "type": "integer", "example": 1 },
+              "pageSize": { "type": "integer", "example": 10 },
+              "totalPages": { "type": "integer", "example": 1 }
+            }
+          }
+        }
+      },
+      "Question": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Question ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "question": {
+            "type": "string",
+            "description": "Question text",
+            "example": "What is the difference between let and var in JavaScript?"
+          },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Answer options",
+            "example": [
+              "let is block-scoped, var is function-scoped",
+              "let cannot be redeclared, var can be redeclared",
+              "let is hoisted, var is not hoisted",
+              "There is no difference"
+            ]
+          },
+          "correct_answer": {
+            "type": "array",
+            "items": { "type": "number" },
+            "description": "Indices of correct answers (0-based)",
+            "example": [0, 1]
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Explanation of the correct answer",
+            "example": "let is block-scoped while var is function-scoped. Also, let cannot be redeclared in the same scope."
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic of the question",
+            "example": "JavaScript"
+          },
+          "difficulty": {
+            "type": "integer",
+            "description": "Difficulty level (1-5)",
+            "example": 3
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "QuestionList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Question" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 10 },
+              "page": { "type": "integer", "example": 1 },
+              "pageSize": { "type": "integer", "example": 10 },
+              "totalPages": { "type": "integer", "example": 1 }
+            }
+          }
+        }
+      },
+      "Submission": {
+        "type": "object",
+        "required": ["candidate_id"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Submission ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "candidate_id": {
+            "type": "string",
+            "description": "Candidate ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "question_id": {
+                  "type": "string",
+                  "description": "Question ID",
+                  "example": "60d21b4667d0d8992e610c85"
+                },
+                "selected_options": {
+                  "type": "array",
+                  "items": { "type": "number" },
+                  "description": "Indices of selected options",
+                  "example": [1, 3]
+                },
+                "skipped": {
+                  "type": "boolean",
+                  "description": "Whether the question was skipped",
+                  "example": false
+                }
+              }
+            },
+            "description": "Answers to questions"
+          },
+          "score": { "type": "number", "description": "Overall score", "example": 85.5 },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "SubmissionList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Submission" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 10 },
+              "page": { "type": "integer", "example": 1 },
+              "pageSize": { "type": "integer", "example": 10 },
+              "totalPages": { "type": "integer", "example": 1 }
+            }
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "message": { "type": "string", "example": "Operation completed successfully" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "message": { "type": "string", "example": "An error occurred" },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "VALIDATION_ERROR" },
+              "details": {
+                "type": "array",
+                "items": { "type": "string" },
+                "example": ["Field is required", "Invalid format"]
+              }
+            }
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "message": { "type": "string", "example": "Validation failed" },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": { "type": "string", "example": "email" },
+                "message": { "type": "string", "example": "Email is required" }
+              }
+            }
+          }
+        }
+      },
+      "NotFoundResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "message": { "type": "string", "example": "Resource not found" }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "description": "Total number of items", "example": 100 },
+          "page": { "type": "integer", "description": "Current page number", "example": 1 },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 10
+          },
+          "totalPages": { "type": "integer", "description": "Total number of pages", "example": 10 }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/candidates": {
+      "post": {
+        "summary": "Create a new candidate",
+        "tags": ["Candidates"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["full_name", "email", "phone_number", "interview_level"],
+                "properties": {
+                  "full_name": { "type": "string", "example": "Nguyễn Văn A" },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "nguyenvana@example.com"
+                  },
+                  "phone_number": { "type": "string", "example": "+84901234567" },
+                  "interview_level": { "type": "string", "example": "junior" },
+                  "gender": { "type": "string", "example": "male" },
+                  "birthday": { "type": "string", "example": "1998-03-15" },
+                  "location": { "type": "string", "example": "Hà Nội, Việt Nam" },
+                  "education_level": { "type": "string", "example": "Bachelor" },
+                  "major": { "type": "string", "example": "Computer Science" },
+                  "years_of_experience": { "type": "number", "example": 2 },
+                  "current_position": { "type": "string", "example": "Frontend Developer" },
+                  "skills": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["JavaScript", "React", "HTML", "CSS", "Git"]
+                  },
+                  "programming_languages": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["JavaScript", "TypeScript"]
+                  },
+                  "preferred_stack": { "type": "string", "example": "frontend" },
+                  "assigned_topics": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["Variables and Data Types", "Loops", "Functions and Parameters"]
+                  },
+                  "cv_url": {
+                    "type": "string",
+                    "example": "https://example.com/cv/nguyenvana.pdf"
+                  },
+                  "portfolio_url": { "type": "string", "example": "https://github.com/nguyenvana" },
+                  "linkedin_url": {
+                    "type": "string",
+                    "example": "https://linkedin.com/in/nguyenvana"
+                  },
+                  "status": { "type": "string", "example": "pending" }
+                }
+              },
+              "example": {
+                "full_name": "Nguyễn Văn A",
+                "email": "nguyenvana@example.com",
+                "phone_number": "+84901234567",
+                "interview_level": "junior",
+                "gender": "male",
+                "skills": ["JavaScript", "React", "HTML", "CSS"],
+                "programming_languages": ["JavaScript", "TypeScript"],
+                "preferred_stack": "frontend"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Candidate created successfully" },
+          "400": { "description": "Invalid input data" },
+          "409": { "description": "Candidate with this email already exists" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Get all candidates with pagination, filtering, and sorting",
+        "tags": ["Candidates"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 },
+            "description": "Number of candidates per page"
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "schema": { "type": "string" },
+            "description": "Filter candidates by name (case-insensitive partial match)"
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "schema": { "type": "string" },
+            "description": "Filter candidates by email (case-insensitive partial match)"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": { "type": "string" },
+            "description": "Filter candidates by status (exact match)"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "type": "string",
+              "enum": ["full_name", "email", "createdAt", "updatedAt"],
+              "default": "createdAt"
+            },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction (ascending or descending)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of candidates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": { "type": "array", "items": { "type": "object" } },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer", "example": 50 },
+                        "page": { "type": "integer", "example": 1 },
+                        "page_size": { "type": "integer", "example": 20 },
+                        "total_pages": { "type": "integer", "example": 3 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/candidates/{id}": {
+      "delete": {
+        "summary": "Delete a candidate",
+        "tags": ["Candidates"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Candidate deleted successfully" },
+          "404": { "description": "Candidate not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Get a candidate by ID",
+        "tags": ["Candidates"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Candidate details" },
+          "404": { "description": "Candidate not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update a candidate",
+        "tags": ["Candidates"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The candidate ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "full_name": { "type": "string", "example": "Nguyễn Văn A (Updated)" },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "nguyenvana.updated@example.com"
+                  },
+                  "phone_number": { "type": "string", "example": "+84901234567" },
+                  "interview_level": { "type": "string", "example": "mid" },
+                  "gender": { "type": "string", "example": "male" },
+                  "birthday": { "type": "string", "example": "1998-03-15" },
+                  "location": { "type": "string", "example": "Hồ Chí Minh, Việt Nam" },
+                  "education_level": { "type": "string", "example": "Master" },
+                  "major": { "type": "string", "example": "Computer Science" },
+                  "years_of_experience": { "type": "number", "example": 3 },
+                  "current_position": { "type": "string", "example": "Senior Frontend Developer" },
+                  "skills": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["JavaScript", "React", "Redux", "HTML", "CSS", "Git"]
+                  },
+                  "programming_languages": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["JavaScript", "TypeScript", "Python"]
+                  },
+                  "preferred_stack": { "type": "string", "example": "fullstack" },
+                  "assigned_topics": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["Advanced JavaScript", "React Hooks", "State Management"]
+                  },
+                  "interview_score": { "type": "number", "example": 8.5 },
+                  "interview_feedback": {
+                    "type": "string",
+                    "example": "Excellent candidate with strong frontend skills"
+                  },
+                  "interview_date": { "type": "string", "example": "2025-05-15T10:00:00" },
+                  "interviewer_name": { "type": "string", "example": "Trần Thị B" },
+                  "cv_url": {
+                    "type": "string",
+                    "example": "https://example.com/cv/nguyenvana-updated.pdf"
+                  },
+                  "portfolio_url": { "type": "string", "example": "https://github.com/nguyenvana" },
+                  "linkedin_url": {
+                    "type": "string",
+                    "example": "https://linkedin.com/in/nguyenvana"
+                  },
+                  "status": { "type": "string", "example": "interviewed" }
+                }
+              },
+              "example": {
+                "full_name": "Nguyễn Văn A (Updated)",
+                "email": "nguyenvana.updated@example.com",
+                "skills": ["JavaScript", "React", "Redux", "Node.js"],
+                "interview_level": "mid",
+                "status": "interviewed",
+                "interview_score": 8.5,
+                "interview_feedback": "Excellent candidate with strong frontend skills"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Candidate updated successfully" },
+          "400": { "description": "Invalid input data" },
+          "404": { "description": "Candidate not found" },
+          "409": { "description": "Email already in use by another candidate" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/health-check": {
+      "get": {
+        "summary": "Basic API health check",
+        "description": "Returns a simple status to confirm the API is running",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "API is running",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "API is running" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health-check/database": {
+      "get": {
+        "summary": "Check database connection status",
+        "description": "Returns the current status of the database connection",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Database connection information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "isConnected": { "type": "boolean", "example": true },
+                        "serverAddress": {
+                          "type": "string",
+                          "example": "mongodb://localhost:27017"
+                        },
+                        "dbName": { "type": "string", "example": "hirebot_db" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to check database connection"
+                    },
+                    "error": { "type": "string", "example": "Connection error" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/instrument-tags": {
+      "post": {
+        "summary": "Create a new instrument tag",
+        "description": "Create a new instrument tag with the provided data",
+        "tags": ["Instrument Tags"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "description"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the tag",
+                    "example": "Personality"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the tag",
+                    "example": "Tags related to personality tests and measurements."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Instrument tag created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                        "name": { "type": "string", "example": "Personality" },
+                        "description": {
+                          "type": "string",
+                          "example": "Tags related to personality tests and measurements."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to create instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Tag name is required", "Tag description is required"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to create instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all instrument tags",
+        "description": "Retrieve a list of all instrument tags",
+        "tags": ["Instrument Tags"],
+        "responses": {
+          "200": {
+            "description": "A list of instrument tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                          "name": { "type": "string", "example": "Personality" },
+                          "description": {
+                            "type": "string",
+                            "example": "Tags related to personality tests and measurements."
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-08T10:00:00Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-08T10:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve instrument tags."
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/instrument-tags/{id}": {
+      "delete": {
+        "summary": "Delete an instrument tag",
+        "description": "Delete an instrument tag by its ID",
+        "tags": ["Instrument Tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the instrument tag to delete",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrument tag deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": {
+                      "type": "string",
+                      "example": "Instrument tag deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                        "name": { "type": "string", "example": "Personality" },
+                        "description": {
+                          "type": "string",
+                          "example": "Tags related to personality tests and measurements."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to delete instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Invalid tag ID format"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instrument tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to delete instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Tag not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to delete instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get an instrument tag by ID",
+        "description": "Retrieve a specific instrument tag by its ID",
+        "tags": ["Instrument Tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the instrument tag to retrieve",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrument tag retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                        "name": { "type": "string", "example": "Personality" },
+                        "description": {
+                          "type": "string",
+                          "example": "Tags related to personality tests and measurements."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve instrument tag."
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Invalid tag ID format"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instrument tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve instrument tag."
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Tag not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve instrument tag."
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an instrument tag",
+        "description": "Update an existing instrument tag with the provided data",
+        "tags": ["Instrument Tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the instrument tag to update",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "description"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the tag",
+                    "example": "Updated Personality"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the tag",
+                    "example": "Updated tags related to personality tests and measurements."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Instrument tag updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                        "name": { "type": "string", "example": "Updated Personality" },
+                        "description": {
+                          "type": "string",
+                          "example": "Updated tags related to personality tests and measurements."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to update instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Tag name is required", "Tag description is required"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instrument tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to update instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Tag not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to update instrument tag." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/instruments": {
+      "post": {
+        "summary": "Create a new instrument",
+        "description": "Create a new instrument (assessment question) with the provided data",
+        "tags": ["Instruments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["questionId", "questionText", "type", "tags"],
+                "properties": {
+                  "questionId": {
+                    "type": "string",
+                    "description": "Unique identifier for the question",
+                    "example": "q1"
+                  },
+                  "questionText": {
+                    "type": "string",
+                    "description": "The text of the question",
+                    "example": "I enjoy socializing with large groups of people."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The type of question",
+                    "enum": ["scale", "multiple-choice", "open-ended", "boolean"],
+                    "example": "scale"
+                  },
+                  "options": {
+                    "type": "array",
+                    "description": "Options for scale and multiple-choice questions",
+                    "items": { "type": "string" },
+                    "example": [
+                      "Strongly Agree",
+                      "Agree",
+                      "Neutral",
+                      "Disagree",
+                      "Strongly Disagree"
+                    ]
+                  },
+                  "tags": {
+                    "type": "array",
+                    "description": "Array of tag IDs associated with this instrument",
+                    "items": { "type": "string" },
+                    "example": ["60b6e98e99f1c5a0b8b7f1c8", "60b6e98e99f1c5a0b8b7f1c9"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Instrument created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c9" },
+                        "questionId": { "type": "string", "example": "q1" },
+                        "questionText": {
+                          "type": "string",
+                          "example": "I enjoy socializing with large groups of people."
+                        },
+                        "type": { "type": "string", "example": "scale" },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "Strongly Agree",
+                            "Agree",
+                            "Neutral",
+                            "Disagree",
+                            "Strongly Disagree"
+                          ]
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                              "name": { "type": "string", "example": "Personality" },
+                              "description": {
+                                "type": "string",
+                                "example": "Tags related to personality tests and measurements."
+                              }
+                            }
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to create instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": [
+                        "Question ID is required",
+                        "Question text is required",
+                        "At least one tag is required"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to create instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all instruments",
+        "description": "Retrieve a list of all instruments with pagination and filtering options",
+        "tags": ["Instruments"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "default": 1 },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer", "default": 10 },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "string",
+              "enum": ["scale", "multiple-choice", "open-ended", "boolean"]
+            },
+            "description": "Filter by instrument type"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "type": "string",
+              "enum": ["createdAt", "updatedAt", "questionId", "questionText", "random"]
+            },
+            "description": "Field to sort by. Use 'random' for random sorting."
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction (ascending or descending)"
+          },
+          {
+            "in": "query",
+            "name": "instrument_tags",
+            "schema": { "type": "string" },
+            "description": "Comma-separated list of tag IDs to filter instruments by. Only instruments associated with any of these tags will be returned.",
+            "example": "681ac4cd6e5dc98b8d660917,c98b8d660917681ac4cd6e5d"
+          },
+          {
+            "in": "query",
+            "name": "ignore_instrument_ids",
+            "schema": { "type": "string" },
+            "description": "Comma-separated list of instrument IDs to exclude from the results",
+            "example": "681ac4cd6e5dc98b8d660917,c98b8d660917681ac4cd6e5d"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of instruments with pagination info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c9" },
+                          "questionId": { "type": "string", "example": "q1" },
+                          "questionText": {
+                            "type": "string",
+                            "example": "I enjoy socializing with large groups of people."
+                          },
+                          "type": { "type": "string", "example": "scale" },
+                          "options": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "example": [
+                              "Strongly Agree",
+                              "Agree",
+                              "Neutral",
+                              "Disagree",
+                              "Strongly Disagree"
+                            ]
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                                "name": { "type": "string", "example": "Personality" },
+                                "description": {
+                                  "type": "string",
+                                  "example": "Tags related to personality tests and measurements."
+                                }
+                              }
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-08T10:00:00Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-08T10:00:00Z"
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": { "type": "integer", "example": 1 },
+                        "limit": { "type": "integer", "example": 10 },
+                        "totalCount": { "type": "integer", "example": 25 },
+                        "totalPages": { "type": "integer", "example": 3 },
+                        "hasNextPage": { "type": "boolean", "example": true },
+                        "hasPrevPage": { "type": "boolean", "example": false }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to retrieve instruments." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/instruments/{id}": {
+      "delete": {
+        "summary": "Delete an instrument",
+        "description": "Delete an instrument by its ID",
+        "tags": ["Instruments"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the instrument to delete",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrument deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Instrument deleted successfully" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c9" },
+                        "questionId": { "type": "string", "example": "q1" },
+                        "questionText": {
+                          "type": "string",
+                          "example": "I enjoy socializing with large groups of people."
+                        },
+                        "type": { "type": "string", "example": "scale" },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "Strongly Agree",
+                            "Agree",
+                            "Neutral",
+                            "Disagree",
+                            "Strongly Disagree"
+                          ]
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["60b6e98e99f1c5a0b8b7f1c8", "60b6e98e99f1c5a0b8b7f1c9"]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to delete instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Invalid instrument ID format"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instrument not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to delete instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Instrument not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to delete instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get an instrument by ID",
+        "description": "Retrieve a specific instrument by its ID",
+        "tags": ["Instruments"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the instrument to retrieve",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instrument retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c9" },
+                        "questionId": { "type": "string", "example": "q1" },
+                        "questionText": {
+                          "type": "string",
+                          "example": "I enjoy socializing with large groups of people."
+                        },
+                        "type": { "type": "string", "example": "scale" },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "Strongly Agree",
+                            "Agree",
+                            "Neutral",
+                            "Disagree",
+                            "Strongly Disagree"
+                          ]
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                              "name": { "type": "string", "example": "Personality" },
+                              "description": {
+                                "type": "string",
+                                "example": "Tags related to personality tests and measurements."
+                              }
+                            }
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to retrieve instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Invalid instrument ID format"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instrument not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to retrieve instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Instrument not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to retrieve instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an instrument",
+        "description": "Update an existing instrument with the provided data",
+        "tags": ["Instruments"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the instrument to update",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "questionId": {
+                    "type": "string",
+                    "description": "Unique identifier for the question",
+                    "example": "q1-updated"
+                  },
+                  "questionText": {
+                    "type": "string",
+                    "description": "The text of the question",
+                    "example": "I enjoy socializing with large groups of people (updated)."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The type of question",
+                    "enum": ["scale", "multiple-choice", "open-ended", "boolean"],
+                    "example": "scale"
+                  },
+                  "options": {
+                    "type": "array",
+                    "description": "Options for scale and multiple-choice questions",
+                    "items": { "type": "string" },
+                    "example": [
+                      "Strongly Agree",
+                      "Agree",
+                      "Neutral",
+                      "Disagree",
+                      "Strongly Disagree"
+                    ]
+                  },
+                  "tags": {
+                    "type": "array",
+                    "description": "Array of tag IDs associated with this instrument",
+                    "items": { "type": "string" },
+                    "example": ["60b6e98e99f1c5a0b8b7f1c8", "60b6e98e99f1c5a0b8b7f1c9"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Instrument updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c9" },
+                        "questionId": { "type": "string", "example": "q1-updated" },
+                        "questionText": {
+                          "type": "string",
+                          "example": "I enjoy socializing with large groups of people (updated)."
+                        },
+                        "type": { "type": "string", "example": "scale" },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "Strongly Agree",
+                            "Agree",
+                            "Neutral",
+                            "Disagree",
+                            "Strongly Disagree"
+                          ]
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                              "name": { "type": "string", "example": "Personality" },
+                              "description": {
+                                "type": "string",
+                                "example": "Tags related to personality tests and measurements."
+                              }
+                            }
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-05-08T10:00:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to update instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": [
+                        "Question ID is required",
+                        "Question text is required",
+                        "At least one tag is required"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Instrument not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to update instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Instrument not found"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to update instrument." },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/instruments/tag/{tagId}": {
+      "get": {
+        "summary": "Get instruments by tag ID",
+        "description": "Retrieve instruments associated with a specific tag ID with pagination",
+        "tags": ["Instruments"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tagId",
+            "required": true,
+            "description": "ID of the tag to filter instruments by",
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "default": 1 },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer", "default": 10 },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "type": "string",
+              "enum": ["createdAt", "updatedAt", "questionId", "questionText"]
+            },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction (ascending or descending)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of instruments with pagination info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c9" },
+                          "questionId": { "type": "string", "example": "q1" },
+                          "questionText": {
+                            "type": "string",
+                            "example": "I enjoy socializing with large groups of people."
+                          },
+                          "type": { "type": "string", "example": "scale" },
+                          "options": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "example": [
+                              "Strongly Agree",
+                              "Agree",
+                              "Neutral",
+                              "Disagree",
+                              "Strongly Disagree"
+                            ]
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "_id": { "type": "string", "example": "60b6e98e99f1c5a0b8b7f1c8" },
+                                "name": { "type": "string", "example": "Personality" },
+                                "description": {
+                                  "type": "string",
+                                  "example": "Tags related to personality tests and measurements."
+                                }
+                              }
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-08T10:00:00Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-08T10:00:00Z"
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": { "type": "integer", "example": 1 },
+                        "limit": { "type": "integer", "example": 10 },
+                        "totalCount": { "type": "integer", "example": 15 },
+                        "totalPages": { "type": "integer", "example": 2 },
+                        "hasNextPage": { "type": "boolean", "example": true },
+                        "hasPrevPage": { "type": "boolean", "example": false }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid tag ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve instruments by tag."
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Invalid tag ID format"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to retrieve instruments by tag."
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["Internal server error"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/languages": {
+      "post": {
+        "summary": "Create a new programming language",
+        "tags": ["Languages"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "designed_by",
+                  "first_appeared",
+                  "paradigm",
+                  "usage",
+                  "popularity_rank",
+                  "type_system"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the programming language"
+                  },
+                  "designed_by": {
+                    "type": "string",
+                    "description": "The designer(s) of the language"
+                  },
+                  "first_appeared": {
+                    "type": "integer",
+                    "description": "The year the language first appeared"
+                  },
+                  "paradigm": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Programming paradigms supported by the language"
+                  },
+                  "usage": {
+                    "type": "string",
+                    "description": "Common usage areas for the language"
+                  },
+                  "popularity_rank": {
+                    "type": "integer",
+                    "description": "Popularity ranking of the language"
+                  },
+                  "type_system": { "type": "string", "description": "Type system characteristics" },
+                  "slug": {
+                    "type": "string",
+                    "description": "URL-friendly identifier (optional, generated from name if not provided)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Language created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Language created successfully." },
+                    "data": { "$ref": "#/components/schemas/Language" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input data" },
+          "409": { "description": "Language with the same name or slug already exists" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Retrieve a list of all programming languages",
+        "tags": ["Languages"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "schema": { "type": "string" },
+            "description": "Filter languages by name (case-insensitive)"
+          },
+          {
+            "in": "query",
+            "name": "designed_by",
+            "schema": { "type": "string" },
+            "description": "Filter languages by designer (case-insensitive)"
+          },
+          {
+            "in": "query",
+            "name": "first_appeared",
+            "schema": { "type": "integer" },
+            "description": "Filter languages by first appearance year"
+          },
+          {
+            "in": "query",
+            "name": "paradigm",
+            "schema": { "type": "string" },
+            "description": "Filter languages by paradigm"
+          },
+          {
+            "in": "query",
+            "name": "popularity_rank",
+            "schema": { "type": "integer" },
+            "description": "Filter languages by popularity rank"
+          },
+          {
+            "in": "query",
+            "name": "type_system",
+            "schema": { "type": "string" },
+            "description": "Filter languages by type system (case-insensitive)"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "default": 1 },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer", "default": 10 },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": { "type": "string", "default": "popularity_rank" },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "asc" },
+            "description": "Sort direction (ascending or descending)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of programming languages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Language" }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "total": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/languages/{id}": {
+      "delete": {
+        "summary": "Delete a programming language by ID",
+        "tags": ["Languages"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "string" },
+            "required": true,
+            "description": "The language ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Language deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Language deleted successfully." }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Language not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Get a programming language by ID",
+        "tags": ["Languages"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "string" },
+            "required": true,
+            "description": "The language ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A programming language object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/Language" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Language not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update a programming language by ID",
+        "tags": ["Languages"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "string" },
+            "required": true,
+            "description": "The language ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the programming language"
+                  },
+                  "designed_by": {
+                    "type": "string",
+                    "description": "The designer(s) of the language"
+                  },
+                  "first_appeared": {
+                    "type": "integer",
+                    "description": "The year the language first appeared"
+                  },
+                  "paradigm": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Programming paradigms supported by the language"
+                  },
+                  "usage": {
+                    "type": "string",
+                    "description": "Common usage areas for the language"
+                  },
+                  "popularity_rank": {
+                    "type": "integer",
+                    "description": "Popularity ranking of the language"
+                  },
+                  "type_system": { "type": "string", "description": "Type system characteristics" },
+                  "slug": { "type": "string", "description": "URL-friendly identifier" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Language updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Language updated successfully." },
+                    "data": { "$ref": "#/components/schemas/Language" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input data" },
+          "404": { "description": "Language not found" },
+          "409": { "description": "Language with the same name or slug already exists" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/logic-questions": {
+      "post": {
+        "summary": "Create a new logic question",
+        "description": "Create a new logic question with the provided data",
+        "tags": ["Logic Questions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LogicQuestionInput" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Logic question created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicQuestion" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all logic questions",
+        "description": "Retrieves logic questions with filtering, sorting, and pagination.\nSupports random sorting with 'sort_by=random' query parameter.\nYou can exclude specific questions with 'ignore_question_ids' parameter (comma-separated list of IDs).\n",
+        "tags": ["Logic Questions"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "level",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 6 },
+            "description": "Filter by difficulty level (1-6)"
+          },
+          {
+            "in": "query",
+            "name": "tag_id",
+            "schema": { "type": "string" },
+            "description": "Filter by tag ID"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": { "type": "string", "enum": ["multiple_choice", "open_question"] },
+            "description": "Filter by question type"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "type": "string",
+              "enum": ["createdAt", "level", "type", "random"],
+              "default": "createdAt"
+            },
+            "description": "Field to sort by. Use 'random' for random sorting."
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction (ascending or descending)"
+          },
+          {
+            "in": "query",
+            "name": "ignore_question_ids",
+            "schema": { "type": "string" },
+            "description": "Comma-separated list of question IDs to exclude from results",
+            "example": "60d21b4667d0d8992e610c85,60d21b4667d0d8992e610c86"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved logic questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/LogicQuestion" }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/PaginationInfo" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Bad request" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/logic-questions/{id}": {
+      "delete": {
+        "summary": "Delete a logic question",
+        "description": "Delete a logic question by its ID",
+        "tags": ["Logic Questions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The logic question ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logic question deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicQuestion" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Logic question not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a logic question by ID",
+        "description": "Retrieve a logic question by its ID",
+        "tags": ["Logic Questions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The logic question ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logic question retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicQuestion" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Logic question not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a logic question",
+        "description": "Update a logic question with the provided data",
+        "tags": ["Logic Questions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The logic question ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LogicQuestionInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logic question updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicQuestion" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or ID format",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Logic question not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/logic-tags": {
+      "post": {
+        "summary": "Create a new logic tag",
+        "description": "Create a new logic tag with the provided data",
+        "tags": ["Logic Tags"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LogicTagInput" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Logic tag created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicTag" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all logic tags",
+        "description": "Retrieve a list of all logic tags",
+        "tags": ["Logic Tags"],
+        "responses": {
+          "200": {
+            "description": "A list of logic tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/LogicTag" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/logic-tags/{id}": {
+      "delete": {
+        "summary": "Delete a logic tag",
+        "description": "Delete a logic tag by its ID",
+        "tags": ["Logic Tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The logic tag ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logic tag deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicTag" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Logic tag not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a logic tag by ID",
+        "description": "Retrieve a logic tag by its ID",
+        "tags": ["Logic Tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The logic tag ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logic tag retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicTag" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid ID format",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Logic tag not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a logic tag",
+        "description": "Update a logic tag with the provided data",
+        "tags": ["Logic Tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The logic tag ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LogicTagInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logic tag updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/LogicTag" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - Invalid input data or ID format",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "404": {
+            "description": "Logic tag not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/positions": {
+      "post": {
+        "summary": "Create a new position",
+        "tags": ["Positions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["slug", "title", "description", "instruction", "level"],
+                "properties": {
+                  "slug": { "type": "string", "description": "Unique identifier for the position" },
+                  "title": { "type": "string", "description": "Position title" },
+                  "description": { "type": "string", "description": "Position description" },
+                  "instruction": { "type": "string", "description": "Position instruction" },
+                  "level": { "type": "integer", "description": "Position level" },
+                  "is_active": {
+                    "type": "boolean",
+                    "description": "Position active status",
+                    "default": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Position created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Position created successfully." },
+                    "data": { "$ref": "#/components/schemas/Position" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input data" },
+          "409": { "description": "Position with the same slug already exists" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Retrieve a list of all positions",
+        "tags": ["Positions"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "title",
+            "schema": { "type": "string" },
+            "description": "Filter positions by title (case-insensitive)"
+          },
+          {
+            "in": "query",
+            "name": "slug",
+            "schema": { "type": "string" },
+            "description": "Filter positions by slug (case-insensitive)"
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "schema": { "type": "integer" },
+            "description": "Filter positions by level"
+          },
+          {
+            "in": "query",
+            "name": "is_active",
+            "schema": { "type": "boolean" },
+            "description": "Filter positions by active status"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "default": 1 },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": { "type": "integer", "default": 10 },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": { "type": "string", "default": "level" },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "asc" },
+            "description": "Sort direction (ascending or descending)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of positions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Position" }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "total": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/positions/{id}": {
+      "delete": {
+        "summary": "Delete a position by ID",
+        "tags": ["Positions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Position ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Position deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Position deleted successfully." }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Position not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Retrieve a specific position by ID",
+        "tags": ["Positions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Position ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A position object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "$ref": "#/components/schemas/Position" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Position not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update a position by ID",
+        "tags": ["Positions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Position ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "slug": { "type": "string", "description": "Unique identifier for the position" },
+                  "title": { "type": "string", "description": "Position title" },
+                  "description": { "type": "string", "description": "Position description" },
+                  "instruction": { "type": "string", "description": "Position instruction" },
+                  "level": { "type": "integer", "description": "Position level" },
+                  "is_active": { "type": "boolean", "description": "Position active status" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Position updated successfully." },
+                    "data": { "$ref": "#/components/schemas/Position" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input data" },
+          "404": { "description": "Position not found" },
+          "409": { "description": "Position with the same slug already exists" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/questions/analyze": {
+      "get": {
+        "summary": "Analyze questions collection statistics",
+        "description": "Performs statistical analysis on the questions collection.\nReturns counts by various dimensions (position, language, difficulty, etc.)\n",
+        "tags": ["Questions"],
+        "responses": {
+          "200": {
+            "description": "Questions analysis completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": {
+                      "type": "string",
+                      "example": "Question analysis completed successfully."
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "number", "example": 500 },
+                        "byPosition": {
+                          "type": "object",
+                          "example": { "Intern": 120, "Junior": 90, "Unknown": 10 }
+                        },
+                        "byLanguage": { "type": "object", "example": { "PHP": 250, "Python": 80 } },
+                        "byDifficulty": {
+                          "type": "object",
+                          "example": { "easy": 300, "medium": 150, "hard": 30, "Unknown": 20 }
+                        },
+                        "byCategory": {
+                          "type": "object",
+                          "example": { "PHP Basics": 120, "OOP": 100 }
+                        },
+                        "byTopic": {
+                          "type": "object",
+                          "example": { "Biến và kiểu dữ liệu": 80, "Class và Object": 60 }
+                        },
+                        "byDate": {
+                          "type": "object",
+                          "example": { "2025-04-28": 10, "2025-04-27": 5 }
+                        },
+                        "uniqueLanguages": { "type": "number", "example": 5 },
+                        "uniqueCategories": { "type": "number", "example": 12 },
+                        "averagePerPosition": { "type": "number", "example": 83.33 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while analyzing questions."
+                    },
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/questions/generate": {
+      "post": {
+        "summary": "Generate multiple-choice questions using Gemini AI",
+        "description": "Generates technical interview questions based on provided parameters",
+        "tags": ["Questions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["topic", "language", "position"],
+                "properties": {
+                  "topic": {
+                    "type": "string",
+                    "description": "The topic for which questions should be generated",
+                    "example": "Data Structures"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "The programming language for the questions",
+                    "example": "JavaScript"
+                  },
+                  "position": {
+                    "type": "string",
+                    "description": "Position level (intern, fresher, junior, middle, senior, expert)",
+                    "example": "junior"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Questions generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Questions generated successfully." },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "question": { "type": "string" },
+                          "options": { "type": "array", "items": { "type": "string" } },
+                          "correctAnswer": { "type": "integer" },
+                          "explanation": { "type": "string" },
+                          "difficulty": { "type": "string" },
+                          "category": { "type": "string" },
+                          "topic": { "type": "string" },
+                          "language": { "type": "string" },
+                          "position": {
+                            "type": "string",
+                            "description": "Text representation of the position level",
+                            "example": "Junior Developer"
+                          },
+                          "positionLevel": {
+                            "type": "integer",
+                            "description": "Numeric position level (1-6)",
+                            "example": 3
+                          },
+                          "difficultyLevel": { "type": "integer" },
+                          "createdAt": { "type": "string", "format": "date-time" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Validation failed" },
+                    "errors": { "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to save questions." }
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "AI service error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to generate questions from AI."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/questions": {
+      "post": {
+        "summary": "Create a new question",
+        "description": "Create a new question with the provided data",
+        "tags": ["Questions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question",
+                  "options",
+                  "correctAnswer",
+                  "explanation",
+                  "difficulty",
+                  "category",
+                  "topic",
+                  "language",
+                  "position",
+                  "positionLevel"
+                ],
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "description": "The text of the question",
+                    "example": "What is a closure in JavaScript?"
+                  },
+                  "options": {
+                    "type": "array",
+                    "description": "An array of 4 possible answers",
+                    "items": { "type": "string" },
+                    "example": [
+                      "A function that returns another function",
+                      "A variable that cannot be changed",
+                      "A function with access to its outer scope",
+                      "A method to close a connection"
+                    ]
+                  },
+                  "correctAnswer": {
+                    "type": "integer",
+                    "description": "Index of the correct answer in the options array (0-based)",
+                    "minimum": 0,
+                    "maximum": 3,
+                    "example": 2
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "description": "Explanation of the correct answer",
+                    "example": "A closure is a function that has access to variables from its outer scope."
+                  },
+                  "difficulty": {
+                    "type": "string",
+                    "description": "Difficulty level of the question",
+                    "enum": ["easy", "medium", "hard"],
+                    "example": "medium"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "General category of the question",
+                    "example": "JavaScript Concepts"
+                  },
+                  "topic": {
+                    "type": "string",
+                    "description": "Specific topic of the question",
+                    "example": "JavaScript"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Programming language context",
+                    "example": "JavaScript"
+                  },
+                  "position": {
+                    "type": "string",
+                    "description": "Targeted job title",
+                    "example": "Junior"
+                  },
+                  "positionLevel": {
+                    "type": "integer",
+                    "description": "Level (1 = Intern, 2 = Junior, etc.)",
+                    "minimum": 1,
+                    "example": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Question created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Question created successfully" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60d21b4667d0d8992e610c85" },
+                        "question": {
+                          "type": "string",
+                          "example": "What is a closure in JavaScript?"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "A function that returns another function",
+                            "A variable that cannot be changed",
+                            "A function with access to its outer scope",
+                            "A method to close a connection"
+                          ]
+                        },
+                        "correctAnswer": { "type": "integer", "example": 2 },
+                        "explanation": {
+                          "type": "string",
+                          "example": "A closure is a function that has access to variables from its outer scope."
+                        },
+                        "difficulty": { "type": "string", "example": "medium" },
+                        "category": { "type": "string", "example": "JavaScript Concepts" },
+                        "topic": { "type": "string", "example": "JavaScript" },
+                        "language": { "type": "string", "example": "JavaScript" },
+                        "position": { "type": "string", "example": "Junior" },
+                        "positionLevel": { "type": "integer", "example": 2 },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-01-01T00:00:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Validation failed" },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": [
+                        "Options must contain exactly 4 items",
+                        "Difficulty must be one of: easy, medium, hard"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while creating the question"
+                    },
+                    "error": { "type": "string", "example": "Database connection error" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/questions/{id}": {
+      "get": {
+        "summary": "Get a question by ID",
+        "description": "Retrieve a question by its unique ID",
+        "tags": ["Questions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The question ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Question retrieved successfully" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60d21b4667d0d8992e610c85" },
+                        "question": {
+                          "type": "string",
+                          "example": "What is a closure in JavaScript?"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "A function that returns another function",
+                            "A variable that cannot be changed",
+                            "A function with access to its outer scope",
+                            "A method to close a connection"
+                          ]
+                        },
+                        "correctAnswer": { "type": "integer", "example": 2 },
+                        "explanation": {
+                          "type": "string",
+                          "example": "A closure is a function that has access to variables from its outer scope."
+                        },
+                        "difficulty": { "type": "string", "example": "medium" },
+                        "category": { "type": "string", "example": "JavaScript Concepts" },
+                        "topic": { "type": "string", "example": "JavaScript" },
+                        "language": { "type": "string", "example": "JavaScript" },
+                        "position": { "type": "string", "example": "Junior" },
+                        "positionLevel": { "type": "integer", "example": 2 },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-01-01T00:00:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Question with ID 60d21b4667d0d8992e610c85 not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while retrieving the question"
+                    },
+                    "error": { "type": "string", "example": "Database connection error" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a question by ID",
+        "description": "Update an existing question with the provided data",
+        "tags": ["Questions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The question ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question",
+                  "options",
+                  "correctAnswer",
+                  "explanation",
+                  "difficulty",
+                  "category",
+                  "topic",
+                  "language",
+                  "position",
+                  "positionLevel"
+                ],
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "description": "The text of the question",
+                    "example": "What is a closure in JavaScript?"
+                  },
+                  "options": {
+                    "type": "array",
+                    "description": "An array of 4 possible answers",
+                    "items": { "type": "string" },
+                    "example": [
+                      "A function that returns another function",
+                      "A variable that cannot be changed",
+                      "A function with access to its outer scope",
+                      "A method to close a connection"
+                    ]
+                  },
+                  "correctAnswer": {
+                    "type": "integer",
+                    "description": "Index of the correct answer in the options array (0-based)",
+                    "minimum": 0,
+                    "maximum": 3,
+                    "example": 2
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "description": "Explanation of the correct answer",
+                    "example": "A closure is a function that has access to variables from its outer scope."
+                  },
+                  "difficulty": {
+                    "type": "string",
+                    "description": "Difficulty level of the question",
+                    "enum": ["easy", "medium", "hard"],
+                    "example": "medium"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "General category of the question",
+                    "example": "JavaScript Concepts"
+                  },
+                  "topic": {
+                    "type": "string",
+                    "description": "Specific topic of the question",
+                    "example": "JavaScript"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Programming language context",
+                    "example": "JavaScript"
+                  },
+                  "position": {
+                    "type": "string",
+                    "description": "Targeted job title",
+                    "example": "Junior"
+                  },
+                  "positionLevel": {
+                    "type": "integer",
+                    "description": "Level (1 = Intern, 2 = Junior, etc.)",
+                    "minimum": 1,
+                    "example": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Question updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Question updated successfully" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string", "example": "60d21b4667d0d8992e610c85" },
+                        "question": {
+                          "type": "string",
+                          "example": "What is a closure in JavaScript?"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "A function that returns another function",
+                            "A variable that cannot be changed",
+                            "A function with access to its outer scope",
+                            "A method to close a connection"
+                          ]
+                        },
+                        "correctAnswer": { "type": "integer", "example": 2 },
+                        "explanation": {
+                          "type": "string",
+                          "example": "A closure is a function that has access to variables from its outer scope."
+                        },
+                        "difficulty": { "type": "string", "example": "medium" },
+                        "category": { "type": "string", "example": "JavaScript Concepts" },
+                        "topic": { "type": "string", "example": "JavaScript" },
+                        "language": { "type": "string", "example": "JavaScript" },
+                        "position": { "type": "string", "example": "Junior" },
+                        "positionLevel": { "type": "integer", "example": 2 },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-01-01T00:00:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Validation failed" },
+                    "errors": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": [
+                        "Options must contain exactly 4 items",
+                        "Difficulty must be one of: easy, medium, hard"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Question with ID 60d21b4667d0d8992e610c85 not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while updating the question"
+                    },
+                    "error": { "type": "string", "example": "Database connection error" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a question by ID",
+        "description": "Delete a question by its unique ID",
+        "tags": ["Questions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The question ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Question deleted successfully" },
+                    "data": {
+                      "type": "object",
+                      "properties": { "success": { "type": "boolean", "example": true } }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "Question with ID 60d21b4667d0d8992e610c85 not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while deleting the question"
+                    },
+                    "error": { "type": "string", "example": "Database connection error" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/questions/request": {
+      "post": {
+        "summary": "Create question request jobs for topics",
+        "description": "Creates jobs to generate questions for specified topics or all topics if none provided",
+        "tags": ["Questions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["position", "language"],
+                "properties": {
+                  "topics": {
+                    "type": "array",
+                    "description": "Array of topic IDs (if empty, all topics will be processed)",
+                    "items": { "type": "string" }
+                  },
+                  "limit": {
+                    "type": "number",
+                    "description": "Maximum number of questions to generate per topic",
+                    "default": 10
+                  },
+                  "position": {
+                    "type": "string",
+                    "description": "Experience level for the questions",
+                    "enum": ["intern", "fresher", "junior", "middle", "senior", "expert"],
+                    "required": true
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Programming language for the questions",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Question request jobs created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "jobCount": { "type": "number" },
+                        "jobs": { "type": "array", "items": { "type": "object" } }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request parameters" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/questions/search": {
+      "get": {
+        "summary": "Search for questions based on various criteria",
+        "description": "Search for questions by topic, language, position, with sorting and pagination.\nThis endpoint allows you to filter questions based on multiple criteria and\nreturns paginated results that can be sorted by different fields.\nSupports random sorting with 'sort_by=random' (default if not specified).\nYou can exclude specific questions by providing their IDs in the 'ignore_question_ids' parameter.\n\nTopic, language, and position parameters are all optional and support multiple values separated by commas.\nAll searches are case-insensitive.\n",
+        "tags": ["Questions"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "topic",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "The topic(s) of the questions to search for, separated by commas (e.g., JavaScript,React,Node.js)",
+            "example": "JavaScript,React"
+          },
+          {
+            "in": "query",
+            "name": "language",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "The programming or spoken language(s) of the questions, separated by commas (e.g., JavaScript,Python,Java)",
+            "example": "JavaScript,TypeScript"
+          },
+          {
+            "in": "query",
+            "name": "position",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "The experience level(s) for the questions, separated by commas (e.g., junior,middle,senior)",
+            "example": "junior,middle"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["question", "category", "createdAt", "random"],
+              "default": "random"
+            },
+            "description": "Field to sort the results by. Use 'random' for random sorting.",
+            "example": "random"
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "required": false,
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Direction to sort the results (ascending or descending)",
+            "example": "desc"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1, "default": 1 },
+            "description": "Page number for pagination (starts at 1)",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 },
+            "description": "Number of questions per page (max 100)",
+            "example": 20
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["compact", "full", "minimalist"],
+              "default": "full"
+            },
+            "description": "Response mode - 'full' includes all fields, 'compact' excludes correctAnswer and explanation, 'minimalist' only includes _id and question",
+            "example": "full"
+          },
+          {
+            "in": "query",
+            "name": "ignore_question_ids",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Comma-separated list of question IDs to exclude from the results",
+            "example": "5f9d88b3e5daad3f349c2e2d,5f9d88b3e5daad3f349c2e2e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success",
+                      "description": "Status of the request"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Questions retrieved successfully.",
+                      "description": "Success message"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Array of questions matching the search criteria",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the question",
+                            "example": "60d21b4667d0d8992e610c85"
+                          },
+                          "question": {
+                            "type": "string",
+                            "description": "The question text",
+                            "example": "What is a closure in JavaScript?"
+                          },
+                          "options": {
+                            "type": "array",
+                            "description": "Array of possible answers",
+                            "items": { "type": "string" },
+                            "example": [
+                              "A function that returns another function",
+                              "A variable that cannot be changed",
+                              "A function with access to its outer scope",
+                              "A method to close a connection"
+                            ]
+                          },
+                          "correctAnswer": {
+                            "type": "integer",
+                            "description": "Index of the correct answer in the options array (0-based)",
+                            "example": 2
+                          },
+                          "explanation": {
+                            "type": "string",
+                            "description": "Explanation of the correct answer",
+                            "example": "A closure is a function that has access to variables from its outer scope."
+                          },
+                          "difficulty": {
+                            "type": "string",
+                            "description": "Difficulty level of the question",
+                            "example": "medium"
+                          },
+                          "category": {
+                            "type": "string",
+                            "description": "Category of the question",
+                            "example": "JavaScript Concepts"
+                          },
+                          "topic": {
+                            "type": "string",
+                            "description": "Topic of the question",
+                            "example": "JavaScript"
+                          },
+                          "language": {
+                            "type": "string",
+                            "description": "Programming language of the question",
+                            "example": "JavaScript"
+                          },
+                          "position": {
+                            "type": "string",
+                            "description": "Position level the question is targeted for",
+                            "example": "Junior"
+                          },
+                          "positionLevel": {
+                            "type": "integer",
+                            "description": "Numeric representation of the position level",
+                            "example": 3
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Date and time when the question was created",
+                            "example": "2023-01-01T00:00:00.000Z"
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "description": "Pagination information",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of questions matching the search criteria",
+                          "example": 50
+                        },
+                        "page": {
+                          "type": "integer",
+                          "description": "Current page number",
+                          "example": 1
+                        },
+                        "page_size": {
+                          "type": "integer",
+                          "description": "Number of questions per page",
+                          "example": 20
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "description": "Total number of pages",
+                          "example": 3
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Validation failed" },
+                    "errors": { "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error",
+                      "description": "Status of the request"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "An error occurred while searching for questions.",
+                      "description": "Error message"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Database connection error",
+                      "description": "Detailed error information"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/submissions": {
+      "post": {
+        "summary": "Create a new submission",
+        "tags": ["Submissions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["candidate_id"],
+                "properties": {
+                  "candidate_id": { "type": "string", "description": "ID of the candidate" },
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["question_id"],
+                      "properties": {
+                        "question_id": { "type": "string", "description": "ID of the question" },
+                        "answer": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 3,
+                          "nullable": true,
+                          "description": "Selected answer (0-3 or null)"
+                        },
+                        "other": {
+                          "type": "string",
+                          "description": "Additional text for the answer"
+                        },
+                        "point": {
+                          "type": "number",
+                          "minimum": 0,
+                          "default": 0,
+                          "description": "Score given to the answer"
+                        },
+                        "is_skip": {
+                          "type": "integer",
+                          "enum": [0, 1],
+                          "description": "Whether the question was skipped (0 or 1)"
+                        }
+                      }
+                    }
+                  },
+                  "instruments": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["instrument_id"],
+                      "properties": {
+                        "instrument_id": {
+                          "type": "string",
+                          "description": "ID of the instrument"
+                        },
+                        "answer": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 4,
+                          "nullable": true,
+                          "description": "Selected answer (0-4 or null)"
+                        },
+                        "other": {
+                          "type": "string",
+                          "description": "Additional text for the instrument response"
+                        },
+                        "point": {
+                          "type": "number",
+                          "minimum": 0,
+                          "default": 0,
+                          "description": "Score given to the instrument response"
+                        },
+                        "is_skip": {
+                          "type": "integer",
+                          "enum": [0, 1],
+                          "description": "Whether the instrument was skipped (0 or 1)"
+                        }
+                      }
+                    }
+                  },
+                  "essay": {
+                    "type": "object",
+                    "properties": {
+                      "question": { "type": "string", "description": "Essay question" },
+                      "answer": { "type": "string", "description": "Essay answer" },
+                      "is_skip": {
+                        "type": "integer",
+                        "enum": [0, 1],
+                        "description": "Whether the essay was skipped (0 or 1)"
+                      }
+                    }
+                  },
+                  "review": {
+                    "type": "object",
+                    "properties": {
+                      "comment": { "type": "string", "description": "Review comment" },
+                      "status": { "type": "string", "description": "Review status" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Submission created successfully" },
+          "400": { "description": "Invalid input data" },
+          "404": { "description": "Candidate, question, or instrument not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/submissions/{id}": {
+      "delete": {
+        "summary": "Delete a submission by ID",
+        "tags": ["Submissions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID of the submission to delete"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Submission deleted successfully" },
+          "400": { "description": "Invalid submission ID format" },
+          "404": { "description": "Submission not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "get": {
+        "summary": "Get a submission by ID",
+        "tags": ["Submissions"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } },
+          {
+            "in": "query",
+            "name": "enrich",
+            "schema": { "type": "boolean", "default": false },
+            "description": "Whether to include candidate, question, and instrument data"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": { "type": "string" },
+                        "candidate_id": { "type": "string" },
+                        "answers": { "type": "array", "items": { "type": "object" } },
+                        "instruments": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "instrument_id": { "type": "string" },
+                              "answer": { "type": "integer" },
+                              "other": { "type": "string" },
+                              "point": {
+                                "type": "number",
+                                "description": "Score given to the instrument response"
+                              },
+                              "is_skip": { "type": "integer" },
+                              "instrument": {
+                                "type": "object",
+                                "description": "Populated instrument data (when enrich=true)"
+                              }
+                            }
+                          }
+                        },
+                        "essay": { "type": "object" },
+                        "review": { "type": "object" },
+                        "candidate": {
+                          "type": "object",
+                          "description": "Candidate data (when enrich=true)"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Submission not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update a submission by ID",
+        "tags": ["Submissions"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "ID of the submission to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["question_id"],
+                      "properties": {
+                        "question_id": { "type": "string", "description": "ID of the question" },
+                        "answer": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 3,
+                          "nullable": true,
+                          "description": "Selected answer (0-3 or null)"
+                        },
+                        "other": {
+                          "type": "string",
+                          "description": "Additional text for the answer"
+                        },
+                        "point": {
+                          "type": "number",
+                          "minimum": 0,
+                          "default": 0,
+                          "description": "Score given to the answer"
+                        },
+                        "is_skip": {
+                          "type": "integer",
+                          "enum": [0, 1],
+                          "description": "Whether the question was skipped (0 or 1)"
+                        }
+                      }
+                    }
+                  },
+                  "instruments": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["instrument_id"],
+                      "properties": {
+                        "instrument_id": {
+                          "type": "string",
+                          "description": "ID of the instrument"
+                        },
+                        "answer": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 4,
+                          "nullable": true,
+                          "description": "Selected answer (0-4 or null)"
+                        },
+                        "other": {
+                          "type": "string",
+                          "description": "Additional text for the instrument response"
+                        },
+                        "point": {
+                          "type": "number",
+                          "minimum": 0,
+                          "default": 0,
+                          "description": "Score given to the instrument response"
+                        },
+                        "is_skip": {
+                          "type": "integer",
+                          "enum": [0, 1],
+                          "description": "Whether the instrument was skipped (0 or 1)"
+                        }
+                      }
+                    }
+                  },
+                  "essay": {
+                    "type": "object",
+                    "properties": {
+                      "question": { "type": "string", "description": "Essay question" },
+                      "answer": { "type": "string", "description": "Essay answer" },
+                      "is_skip": {
+                        "type": "integer",
+                        "enum": [0, 1],
+                        "description": "Whether the essay was skipped (0 or 1)"
+                      }
+                    }
+                  },
+                  "review": {
+                    "type": "object",
+                    "properties": {
+                      "comment": { "type": "string", "description": "Review comment" },
+                      "status": { "type": "string", "description": "Review status" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Submission updated successfully" },
+          "400": { "description": "Invalid input data" },
+          "404": { "description": "Submission, question, or instrument not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/submissions/candidate/{candidateId}": {
+      "get": {
+        "summary": "Get submissions by candidate ID",
+        "tags": ["Submissions"],
+        "parameters": [
+          { "in": "path", "name": "candidateId", "required": true, "schema": { "type": "string" } },
+          {
+            "in": "query",
+            "name": "enrich",
+            "schema": { "type": "boolean", "default": false },
+            "description": "Whether to include candidate, question, and instrument data"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of submissions for the candidate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": { "type": "string" },
+                          "candidate_id": { "type": "string" },
+                          "answers": { "type": "array", "items": { "type": "object" } },
+                          "instruments": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "instrument_id": { "type": "string" },
+                                "answer": { "type": "integer" },
+                                "other": { "type": "string" },
+                                "is_skip": { "type": "integer" },
+                                "instrument": {
+                                  "type": "object",
+                                  "description": "Populated instrument data (when enrich=true)"
+                                }
+                              }
+                            }
+                          },
+                          "essay": { "type": "object" },
+                          "review": { "type": "object" },
+                          "candidate": {
+                            "type": "object",
+                            "description": "Candidate data (when enrich=true)"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Candidate not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/topics": {
+      "get": {
+        "summary": "Get all topics",
+        "description": "Retrieve a list of all available topics",
+        "tags": ["Topics"],
+        "responses": {
+          "200": {
+            "description": "A list of topics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": { "type": "string", "example": "Biến và kiểu dữ liệu" },
+                          "difficulty": { "type": "number", "example": 1 },
+                          "popularity": { "type": "string", "example": "low" },
+                          "suitable_level": { "type": "string", "example": "intern" },
+                          "description": {
+                            "type": "string",
+                            "example": "Chủ đề liên quan đến biến và kiểu dữ liệu, thường gặp trong phỏng vấn lập trình viên."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "error" },
+                    "message": { "type": "string", "example": "Failed to retrieve topics." }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "Candidates", "description": "Candidate management endpoints" },
+    { "name": "Health", "description": "API health check endpoints" },
+    { "name": "Instrument Tags", "description": "API endpoints for managing instrument tags" },
+    {
+      "name": "Instruments",
+      "description": "API endpoints for managing instruments (assessment questions)"
+    },
+    { "name": "Languages", "description": "API endpoints for managing programming languages" },
+    { "name": "Positions", "description": "API endpoints for managing positions" },
+    { "name": "Questions", "description": "API endpoints for generating and managing questions" },
+    { "name": "Submissions", "description": "Submission management endpoints" },
+    { "name": "Topics", "description": "API endpoints for managing topics" }
+  ]
+}
