@@ -6,6 +6,7 @@ import QuestionCard from '@/components/question/QuestionCard'
 import { Question } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { submitAnswers } from '@/services/questions.service'
+import { useCandidateContext } from '@/contexts/CandidateContext'
 
 // Define the submission interface
 interface AnswerSubmission {
@@ -24,9 +25,11 @@ interface Submission {
 export default function QuestionList() {
   // State to store questions from API
   const [questions, setQuestions] = useState<Question[]>([])
+  // Get candidate_id from context
+  const { candidateId } = useCandidateContext()
   // State to store all submissions
   const [submission, setSubmission] = useState<Submission>({
-    candidate_id: '', // This would typically come from the user session or context
+    candidate_id: '', // Will be set from context when submitting
     answers: [],
   })
 
@@ -38,7 +41,7 @@ export default function QuestionList() {
 
       // Initialize empty answers for each question
       if (questions && questions.length > 0) {
-        const initialAnswers = questions.map(q => ({
+        const initialAnswers = questions.map((q: Question) => ({
           question_id: q._id || '',
           answer: null,
           other: '',
@@ -74,10 +77,10 @@ export default function QuestionList() {
       const newAnswers = [...prev.answers]
 
       if (existingAnswerIndex >= 0) {
-        // Update existing answer
+        // Update the existing answer
         newAnswers[existingAnswerIndex] = questionSubmission
       } else {
-        // Add new answer
+        // Add a new answer
         newAnswers.push(questionSubmission)
       }
 
@@ -99,15 +102,20 @@ export default function QuestionList() {
   } | null>(null)
 
   const handleSubmit = async () => {
-    if (!submission.candidate_id) {
-      // For demo purposes, set a placeholder candidate ID
-      // In a real app, this would come from authentication
-      submission.candidate_id = 'demo-candidate-id'
+    // Create a copy of the submission with the candidate_id from context
+    const submissionData = {
+      ...submission,
+      candidate_id: candidateId || 'demo-candidate-id' // Fallback to demo ID if no candidate selected
+    }
+
+    // Validate if the candidate is selected
+    if (!candidateId) {
+      console.warn('No candidate selected. Using demo ID as fallback.')
     }
 
     setIsSubmitting(true)
     try {
-      const result = await submitAnswers(submission)
+      const result = await submitAnswers(submissionData)
       setSubmissionResult(result)
       console.log('Submission result:', result)
     } catch (error) {

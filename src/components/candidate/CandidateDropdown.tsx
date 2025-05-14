@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/select'
 import { Candidate } from '@/types/api'
 import candidateService from '@/services/candidates.service'
+import { useCandidateContext } from '@/contexts/CandidateContext'
 
 interface CandidateDropdownProps {
   disabled: boolean
@@ -20,6 +21,7 @@ export default function CandidateDropdown({ disabled, onSelect, value }: Candida
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { setCandidateId } = useCandidateContext()
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -45,6 +47,10 @@ export default function CandidateDropdown({ disabled, onSelect, value }: Candida
   }, [])
 
   const handleValueChange = (candidateId: string) => {
+    // Save to context
+    setCandidateId(candidateId)
+    
+    // Also call the onSelect prop if provided
     if (onSelect) {
       onSelect(candidateId)
     }

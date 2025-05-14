@@ -19,7 +19,7 @@ export default function CandidateSection() {
           disabled={disabled}
           onClick={() => setDisabled(true)}
         >
-          Bắt đầu bài thi
+          Start
         </Button>
       </div>
     </section>
