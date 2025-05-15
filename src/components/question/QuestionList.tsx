@@ -105,7 +105,7 @@ export default function QuestionList() {
     // Create a copy of the submission with the candidate_id from context
     const submissionData = {
       ...submission,
-      candidate_id: candidateId || 'demo-candidate-id' // Fallback to demo ID if no candidate selected
+      candidate_id: candidateId || 'demo-candidate-id', // Fallback to demo ID if no candidate selected
     }
 
     // Validate if the candidate is selected

@@ -64,7 +64,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
 
   return (
     <div className="p-4 border rounded-md space-y-3">
-      <div className='mb-10'>
+      <div className="mb-10">
         <p className="font-semibold">Question:</p>
         <p>{question.question}</p>
       </div>
@@ -74,7 +74,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
             <Checkbox
               id={`question-${question._id}-option-${index}`}
               checked={selectedOption === index}
-              onCheckedChange={() => handleOptionSelect(index)}          
+              onCheckedChange={() => handleOptionSelect(index)}
             />
             <label
               htmlFor={`question-${question._id}-option-${index}`}
@@ -95,7 +95,9 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
         <span className="text-sm">Show explanation</span>
       </div>
       {showExplanation && (
-        <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">{question.explanation}</div>
+        <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
+          {question.explanation}
+        </div>
       )}
       <Textarea
         placeholder="Enter your free-form answer..."

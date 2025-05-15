@@ -6,7 +6,7 @@ export default function CreateCandidateButton({ disabled }: { disabled: boolean 
   return (
     <Button className="cursor-pointer" variant="outline" disabled={disabled}>
       <PlusCircle className="mr-2" size={16} />
-      Tạo mới
+      Create new
     </Button>
   )
 }

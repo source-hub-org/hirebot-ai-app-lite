@@ -49,7 +49,7 @@ export default function CandidateDropdown({ disabled, onSelect, value }: Candida
   const handleValueChange = (candidateId: string) => {
     // Save to context
     setCandidateId(candidateId)
-    
+
     // Also call the onSelect prop if provided
     if (onSelect) {
       onSelect(candidateId)
@@ -60,7 +60,7 @@ export default function CandidateDropdown({ disabled, onSelect, value }: Candida
     <div className="min-w-[15rem]">
       <Select disabled={disabled || loading} value={value} onValueChange={handleValueChange}>
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={loading ? 'Loading...' : 'Chọn ứng viên'} />
+          <SelectValue placeholder={loading ? 'Loading...' : 'Select candidate'} />
         </SelectTrigger>
         <SelectContent>
           {error ? (

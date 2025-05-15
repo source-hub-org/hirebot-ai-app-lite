@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // For debugging
   console.log('API_BASE_URL:', process.env.API_BASE_URL)
 
-  // Log thông tin Request
+  // Log Request information
   console.log('Request to:', targetUrl)
   console.log('Request method:', req.method)
   console.log('Request headers:', req.headers)
@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...req.headers, // Gửi các header từ client nếu có
+        ...req.headers, // Forward headers from client if any
       },
     })
 
