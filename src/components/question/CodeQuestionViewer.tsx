@@ -1,18 +1,18 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import React from 'react'
+import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 interface CodeQuestionViewerProps {
-  content: string;
+  content: string
 }
 
 const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
   // Bước 1: Convert \\n thành \n thật
-  const raw = content.replace(/\\n/g, '\n');
+  const raw = content.replace(/\\n/g, '\n')
 
   // Bước 2: Tách phần code và text
-  const parts = raw.split(/(```[\s\S]*?```)/g);
+  const parts = raw.split(/(```[\s\S]*?```)/g)
 
   // Bước 3: Render từng phần
   const renderedParts = parts.map((part, index) => {
@@ -23,15 +23,10 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
           key={index}
           components={{
             code({ node, inline, className, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || '');
+              const match = /language-(\w+)/.exec(className || '')
               return !inline && match ? (
                 <div className="text-xs">
-                  <SyntaxHighlighter
-                    style={oneDark}
-                    language={match[1]}
-                    PreTag="div"
-                    {...props}
-                  >
+                  <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
                     {String(children).replace(/\n$/, '')}
                   </SyntaxHighlighter>
                 </div>
@@ -39,18 +34,18 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
                 <code className={className} {...props}>
                   {children}
                 </code>
-              );
-            }
+              )
+            },
           }}
         >
           {part}
         </ReactMarkdown>
-      );
+      )
     } else {
       // Text thường: xử lý xuống dòng + inline code
-      const lines = part.split('\n');
+      const lines = part.split('\n')
       return lines.map((line, i) => {
-        const segments = line.split(/(`[^`]+`)/g); // tách text thường và code inline
+        const segments = line.split(/(`[^`]+`)/g) // tách text thường và code inline
 
         return (
           <p key={`${index}-${i}`} className="mb-2">
@@ -60,17 +55,17 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
                   <code key={j} className="bg-gray-100 px-1 py-0.5 rounded text-sm inline-code">
                     {segment.slice(1, -1)}
                   </code>
-                );
+                )
               }
-              return <React.Fragment key={j}>{segment}</React.Fragment>;
+              return <React.Fragment key={j}>{segment}</React.Fragment>
             })}
           </p>
-        );
-      });
+        )
+      })
     }
-  });
+  })
 
-  return <div className="prose max-w-none">{renderedParts}</div>;
-};
+  return <div className="prose max-w-none">{renderedParts}</div>
+}
 
-export default CodeQuestionViewer;
+export default CodeQuestionViewer
