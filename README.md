@@ -22,7 +22,7 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 ### Prerequisites
 
 - Node.js 18.x or higher
-- npm or yarn
+- [Bun](https://bun.sh/) runtime
 
 ### Installation
 
@@ -34,16 +34,12 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 
 2. Install dependencies:
    ```bash
-   npm install
-   # or
-   yarn install
+   bun install
    ```
 
 3. Run the development server:
    ```bash
-   npm run dev
-   # or
-   yarn dev
+   bun dev
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
