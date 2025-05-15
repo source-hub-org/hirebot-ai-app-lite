@@ -130,6 +130,7 @@ body {
 .site-container {
   border-left: 1px solid #dedede;
   border-right: 1px solid #dedede;
+  box-shadow: -10px 0 10px -5px rgba(0, 0, 0, 0.1), 10px 0 10px -5px rgba(0, 0, 0, 0.1);
 }
 
 .inline-code {
