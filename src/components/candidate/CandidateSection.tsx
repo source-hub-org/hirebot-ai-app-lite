@@ -12,15 +12,8 @@ export default function CandidateSection() {
   return (
     <section className="p-4 border-b">
       <div className="flex justify-start items-start gap-x-5 w-full">
-        <CandidateDropdown disabled={disabled} />
+        <CandidateDropdown disabled={disabled} onSelect={() => setDisabled(true)} />
         <CreateCandidateButton disabled={disabled} />
-        <Button
-          className="ml-auto cursor-pointer"
-          disabled={disabled}
-          onClick={() => setDisabled(true)}
-        >
-          Start
-        </Button>
       </div>
     </section>
   )

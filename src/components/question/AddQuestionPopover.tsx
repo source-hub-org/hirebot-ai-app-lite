@@ -17,8 +17,10 @@ import { getLanguages } from '@/services/languages.service'
 import { getPositions } from '@/services/positions.service'
 import { searchQuestions } from '@/services/questions.service'
 import { Topic, Language, Position } from '@/types/api'
+import { useCandidateContext } from '@/contexts/CandidateContext'
 
 export default function AddQuestionPopover() {
+  const { candidateId } = useCandidateContext();
   const [open, setOpen] = useState(false)
   const [topics, setTopics] = useState<Topic[]>([])
   const [languages, setLanguages] = useState<Language[]>([])
@@ -35,7 +37,7 @@ export default function AddQuestionPopover() {
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [pageSize, setPageSize] = useState<string>('')
 
-  // Fetch data when popover opens
+  // Fetch data when the popover opens
   useEffect(() => {
     if (open) {
       fetchData()
@@ -107,6 +109,10 @@ export default function AddQuestionPopover() {
   // Handle cancel button click
   const handleCancel = () => {
     setOpen(false)
+  }
+
+  if (!candidateId) {
+    return null
   }
 
   return (
