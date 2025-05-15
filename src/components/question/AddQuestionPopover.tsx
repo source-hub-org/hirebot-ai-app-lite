@@ -20,7 +20,7 @@ import { Topic, Language, Position } from '@/types/api'
 import { useCandidateContext } from '@/contexts/CandidateContext'
 
 export default function AddQuestionPopover() {
-  const { candidateId } = useCandidateContext();
+  const { candidateId } = useCandidateContext()
   const [open, setOpen] = useState(false)
   const [topics, setTopics] = useState<Topic[]>([])
   const [languages, setLanguages] = useState<Language[]>([])

@@ -4,6 +4,8 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Question } from '@/types/api'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface QuestionCardProps {
   question: Question
@@ -41,7 +43,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
 
     setSubmission(newSubmission)
 
-    // Notify parent component if callback is provided
+    // Notify the parent component if a callback is provided
     if (onAnswerChange) {
       onAnswerChange(newSubmission)
     }
@@ -64,9 +66,10 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
 
   return (
     <div className="p-4 border rounded-md space-y-3">
-      <div className="mb-10">
-        <p className="font-semibold">Question:</p>
-        <p>{question.question}</p>
+      <div className="mb-5">
+        <div className="markdown-content">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{question.question}</ReactMarkdown>
+        </div>
       </div>
       <div className="space-y-2">
         {question.options.map((option, index) => (
@@ -95,8 +98,10 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
         <span className="text-sm">Show explanation</span>
       </div>
       {showExplanation && (
-        <div className="bg-gray-50 p-3 rounded-md text-sm whitespace-pre-line">
-          {question.explanation}
+        <div className="bg-gray-50 p-3 rounded-md text-sm">
+          <div className="markdown-content">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{question.explanation}</ReactMarkdown>
+          </div>
         </div>
       )}
       <Textarea
