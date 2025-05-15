@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Question } from '@/types/api'
 import CodeQuestionViewerProps from '@/components/question/CodeQuestionViewer'
-import ReactMarkdown from 'react-markdown'
 
 interface QuestionCardProps {
   question: Question

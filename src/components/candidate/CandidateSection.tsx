@@ -4,7 +4,6 @@
 import { useState } from 'react'
 import CandidateDropdown from '@/components/candidate/CandidateDropdown'
 import CreateCandidateButton from '@/components/candidate/CreateCandidateButton'
-import { Button } from '@/components/ui/button'
 
 export default function CandidateSection() {
   const [disabled, setDisabled] = useState(false)
