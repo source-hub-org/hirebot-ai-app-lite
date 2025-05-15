@@ -106,6 +106,8 @@ export interface Question {
   correct_answer: number[]
   explanation: string
   topic: string
+  language: string
+  position: string
   difficulty: number
   createdAt?: string
   updatedAt?: string

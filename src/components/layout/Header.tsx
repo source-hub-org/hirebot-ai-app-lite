@@ -34,9 +34,9 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
 
       {/* Hero Image with overlay content */}
       <div className="relative w-full h-[360px]">
-        <Image src="/cover.png" alt="Hero Cover" fill className="object-cover" priority />
+        <Image src="/cover-jp.jpg" alt="Hero Cover" fill className="object-cover" priority />
         {/* Overlay layer */}
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-amber-900/50" />
 
         {/* Text Content */}
         <div className="absolute left-10 top-1/2 -translate-y-1/2 text-white max-w-1/2 z-10">

@@ -17,6 +17,9 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 - **State Management**: React Context API
 - **API Integration**: Custom API services for questions, candidates, and submissions
 
+## Screenshots
+![HireBot AI App Lite Screenshot](./assets/screenshot.png)
+
 ## Getting Started
 
 ### Prerequisites
@@ -27,17 +30,20 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/hirebot-ai-app-lite.git
    cd hirebot-ai-app-lite
    ```
 
 2. Install dependencies:
+
    ```bash
    bun install
    ```
 
 3. Run the development server:
+
    ```bash
    bun dev
    ```
