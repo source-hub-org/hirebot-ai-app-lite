@@ -1,6 +1,6 @@
 import MainLayout from '@/components/layout/MainLayout'
 
-export default function ContactPage() {
+export default function LoginPage() {
   return (
     <MainLayout>
       <p className="text-left p-5">

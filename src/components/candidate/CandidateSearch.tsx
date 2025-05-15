@@ -63,7 +63,7 @@ export default function CandidateSearch({ onSearch, isLoading = false }: Candida
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Name search */}
         <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium">
+          <label htmlFor="name" className="font-medium">
             Name
           </label>
           <Input
@@ -76,7 +76,7 @@ export default function CandidateSearch({ onSearch, isLoading = false }: Candida
 
         {/* Email search */}
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="font-medium">
             Email
           </label>
           <Input
@@ -89,7 +89,7 @@ export default function CandidateSearch({ onSearch, isLoading = false }: Candida
 
         {/* Status filter */}
         <div className="space-y-2">
-          <label htmlFor="status" className="text-sm font-medium">
+          <label htmlFor="status" className="font-medium">
             Status
           </label>
           <Select
@@ -111,7 +111,7 @@ export default function CandidateSearch({ onSearch, isLoading = false }: Candida
 
         {/* Interview level filter */}
         <div className="space-y-2">
-          <label htmlFor="interview_level" className="text-sm font-medium">
+          <label htmlFor="interview_level" className="font-medium">
             Level
           </label>
           <Select
@@ -135,7 +135,7 @@ export default function CandidateSearch({ onSearch, isLoading = false }: Candida
 
         {/* Sort by */}
         <div className="space-y-2">
-          <label htmlFor="sort_by" className="text-sm font-medium">
+          <label htmlFor="sort_by" className="font-medium">
             Sort By
           </label>
           <Select
@@ -157,7 +157,7 @@ export default function CandidateSearch({ onSearch, isLoading = false }: Candida
 
         {/* Sort direction */}
         <div className="space-y-2">
-          <label htmlFor="sort_direction" className="text-sm font-medium">
+          <label htmlFor="sort_direction" className="font-medium">
             Sort Direction
           </label>
           <Select

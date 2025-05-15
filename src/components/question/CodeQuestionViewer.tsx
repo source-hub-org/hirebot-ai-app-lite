@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -8,25 +10,29 @@ interface CodeQuestionViewerProps {
 }
 
 const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
-  // Bước 1: Convert \\n thành \n thật
   const raw = content.replace(/\\n/g, '\n')
 
-  // Bước 2: Tách phần code và text
   const parts = raw.split(/(```[\s\S]*?```)/g)
 
-  // Bước 3: Render từng phần
   const renderedParts = parts.map((part, index) => {
     if (part.startsWith('```')) {
-      // Code block
       return (
         <ReactMarkdown
           key={index}
           components={{
-            code({ node, inline, className, children, ...props }) {
+            code({ inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
               return !inline && match ? (
                 <div className="text-xs">
-                  <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
+                  <SyntaxHighlighter
+                    style={oneDark}
+                    language={match[1]}
+                    PreTag="div"
+                    customStyle={{
+                      fontSize: '0.9rem',
+                    }}
+                    {...props}
+                  >
                     {String(children).replace(/\n$/, '')}
                   </SyntaxHighlighter>
                 </div>
@@ -42,7 +48,6 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
         </ReactMarkdown>
       )
     } else {
-      // Text thường: xử lý xuống dòng + inline code
       const lines = part.split('\n')
       return lines.map((line, i) => {
         const segments = line.split(/(`[^`]+`)/g) // tách text thường và code inline
@@ -52,7 +57,7 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
             {segments.map((segment, j) => {
               if (segment.startsWith('`') && segment.endsWith('`')) {
                 return (
-                  <code key={j} className="bg-gray-100 px-1 py-0.5 rounded text-sm inline-code">
+                  <code key={j} className="bg-gray-100 px-1 py-0.5 rounded inline-code">
                     {segment.slice(1, -1)}
                   </code>
                 )

@@ -42,6 +42,8 @@
 }
 
 :root {
+  font-size: 14px;
+  line-height: 1.3;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
@@ -116,6 +118,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 1rem;
+    line-height: 1.5;
   }
 }
 
@@ -128,12 +132,6 @@ body {
   border-right: 1px solid #dedede;
 }
 
-.question-text.markdown-content {
-  font-size: 1em;
-  line-height: 1.5em;
-}
-
 .inline-code {
   color: chocolate;
-  font-size: 0.95em;
 }

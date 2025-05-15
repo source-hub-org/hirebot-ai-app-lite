@@ -134,7 +134,7 @@ export default function AddQuestionPopover() {
       >
         <div className="space-y-2">
           <h4 className="font-medium leading-none">More questions</h4>
-          <p className="text-sm text-muted-foreground">Use filters to find and add questions.</p>
+          <p className="text-muted-foreground">Use filters to find and add questions.</p>
         </div>
 
         <div className="flex items-center">

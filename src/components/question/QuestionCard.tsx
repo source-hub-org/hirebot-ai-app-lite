@@ -66,12 +66,10 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
 
   return (
     <div className="p-4 border rounded-md space-y-3">
-      <div className="mb-5">
-        <div className="question-text markdown-content">
-          <CodeQuestionViewerProps content={question.question}></CodeQuestionViewerProps>
-        </div>
+      <div className="question-text markdown-content">
+        <CodeQuestionViewerProps content={question.question}></CodeQuestionViewerProps>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-2 mt-5">
         {question.options.map((option, index) => (
           <div key={index} className="flex items-start space-x-2 mb-2">
             <Checkbox
@@ -81,7 +79,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
             />
             <label
               htmlFor={`question-${question._id}-option-${index}`}
-              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {option}
             </label>
@@ -93,12 +91,12 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
           </div>
         ))}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-5">
         <Switch checked={showExplanation} onCheckedChange={handleExplanationToggle} />
-        <span className="text-sm">Show explanation</span>
+        <span>Show explanation</span>
       </div>
       {showExplanation && (
-        <div className="bg-gray-50 p-3 rounded-md text-sm">
+        <div className="bg-gray-50 p-3 rounded-md">
           <div className="question-text markdown-content">
             <CodeQuestionViewerProps content={question.explanation}></CodeQuestionViewerProps>
           </div>

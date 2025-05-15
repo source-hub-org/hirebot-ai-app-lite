@@ -1,45 +1,34 @@
-/**
- * Header layout includes the following components:
- *
- * 1. Top-bar:
- *    - Left side: Navigation links (Home, About, Contact)
- *    - Right side: Login link (static, no authentication logic yet)
- *
- * 2. Hero Image:
- *    - A full-width cover image with fixed height
- *    - A semi-transparent dark overlay above the image to enhance text visibility
- *    - Overlaid content on the left side, vertically centered:
- *        - Page Title (large text)
- *        - Page Description (smaller subtitle below title)
- *
- * 3. Breadcrumb:
- *    - Placed below the hero image
- *    - Displays the current navigation path, such as: Home / Create
- */
+'use client'
 
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+interface HeaderProps {
+  pageTitle: string
+  pageDescription: string
+}
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
   return (
     <div className="w-full">
       {/* Top-bar */}
       <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
         <div className="flex space-x-6">
-          <a href="#" className="text-gray-700 hover:text-black font-medium">
+          <Link href="/" className="hover:text-black text-base">
             Home
-          </a>
-          <a href="#" className="text-gray-700 hover:text-black font-medium">
+          </Link>
+          <Link href="/about" className="hover:text-black text-base">
             About
-          </a>
-          <a href="#" className="text-gray-700 hover:text-black font-medium">
+          </Link>
+          <Link href="/contact" className="hover:text-black text-base">
             Contact
-          </a>
+          </Link>
         </div>
         <div>
-          <a href="#" className="text-gray-700 hover:text-black font-medium">
+          <Link href="/login" className="hover:text-black text-base">
             Login
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -50,16 +39,47 @@ const Header: React.FC = () => {
         <div className="absolute inset-0 bg-black/50" />
 
         {/* Text Content */}
-        <div className="absolute left-10 top-1/2 -translate-y-1/2 text-white max-w-md z-10">
-          <h1 className="text-4xl font-bold mb-2">Create new test</h1>
-          <p className="text-lg text-gray-200">
-            Start building your custom test from scratch with our intuitive interface.
-          </p>
+        <div className="absolute left-10 top-1/2 -translate-y-1/2 text-white max-w-1/2 z-10">
+          <h1 className="font-bold mb-2 text-[3rem]">{pageTitle}</h1>
+          <p className="text-gray-200 text-base">{pageDescription}</p>
         </div>
       </div>
 
       {/* Breadcrumb */}
-      <div className="px-6 py-3 bg-gray-100 text-sm text-gray-600">Home / Submissions / New</div>
+      <div className="px-6 py-3 bg-gray-100 text-gray-600 text-base">
+        <BreadcrumbNav />
+      </div>
+    </div>
+  )
+}
+// BreadcrumbNav component to display the current path
+const BreadcrumbNav: React.FC = () => {
+  const pathname = usePathname()
+
+  // Skip the first empty segment and format the path segments
+  const segments = (pathname ?? '').split('/').filter(segment => segment !== '')
+
+  return (
+    <div className="flex items-center">
+      <Link href="/" className="hover:text-black">
+        Home
+      </Link>
+      {segments.map((segment, index) => {
+        // Build the path up to this segment
+        const path = `/${segments.slice(0, index + 1).join('/')}`
+
+        // Capitalize the first letter of each segment
+        const formattedSegment = segment.charAt(0).toUpperCase() + segment.slice(1)
+
+        return (
+          <React.Fragment key={path}>
+            <span className="mx-2">/</span>
+            <Link href={path} className="hover:text-black">
+              {formattedSegment}
+            </Link>
+          </React.Fragment>
+        )
+      })}
     </div>
   )
 }

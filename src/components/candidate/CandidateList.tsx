@@ -92,7 +92,7 @@ export default function CandidateList() {
       {/* Pagination */}
       {!loading && candidates.length > 0 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-muted-foreground">
             Showing {candidates.length} of {pagination.total} candidates
           </div>
           <div className="flex items-center space-x-2">
