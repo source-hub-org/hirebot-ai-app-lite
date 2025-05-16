@@ -10,8 +10,52 @@
     { "url": "http://localhost:8000", "description": "Nginx reverse proxy server" },
     { "url": "http://localhost:3000", "description": "Development server" }
   ],
+  "security": [{ "bearerAuth": [] }, { "oauth2": ["read", "write", "admin"] }],
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your Bearer token in the format \"Bearer {token}\""
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "tokenUrl": "/api/oauth/token",
+            "scopes": {
+              "read": "Read access to protected resources",
+              "write": "Write access to protected resources",
+              "admin": "Admin access to protected resources"
+            }
+          },
+          "authorizationCode": {
+            "authorizationUrl": "/api/oauth/authorize",
+            "tokenUrl": "/api/oauth/token",
+            "scopes": {
+              "read": "Read access to protected resources",
+              "write": "Write access to protected resources",
+              "admin": "Admin access to protected resources"
+            }
+          }
+        }
+      }
+    },
     "schemas": {
+      "PaginationInfo": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 50, "description": "Total number of records" },
+          "page": { "type": "integer", "example": 1, "description": "Current page number" },
+          "page_size": {
+            "type": "integer",
+            "example": 20,
+            "description": "Number of items per page"
+          },
+          "total_pages": { "type": "integer", "example": 3, "description": "Total number of pages" }
+        }
+      },
       "Position": {
         "type": "object",
         "required": ["slug", "title", "description", "instruction", "level"],
@@ -408,6 +452,32 @@
           }
         }
       },
+      "UnauthorizedError": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "unauthorized" },
+          "error_description": { "type": "string", "example": "Access token is required" }
+        }
+      },
+      "ForbiddenError": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "insufficient_scope" },
+          "error_description": { "type": "string", "example": "Scope 'admin' is required" }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "token_type": { "type": "string", "example": "Bearer" },
+          "expires_in": { "type": "integer", "example": 3600 },
+          "refresh_token": { "type": "string", "example": "def502003b1308..." }
+        }
+      },
       "SuccessResponse": {
         "type": "object",
         "properties": {
@@ -468,6 +538,284 @@
             "example": 10
           },
           "totalPages": { "type": "integer", "description": "Total number of pages", "example": 10 }
+        }
+      },
+      "Instrument": {
+        "type": "object",
+        "required": ["questionId", "questionText", "type", "tags"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Instrument ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "questionId": {
+            "type": "string",
+            "description": "Unique question identifier",
+            "example": "INST-001"
+          },
+          "questionText": {
+            "type": "string",
+            "description": "Question text",
+            "example": "How comfortable are you working in a team environment?"
+          },
+          "type": {
+            "type": "string",
+            "description": "Question type",
+            "enum": ["scale", "multiple-choice", "open-ended", "boolean"],
+            "example": "scale"
+          },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Answer options (required for scale and multiple-choice types)",
+            "example": ["Not comfortable", "Somewhat comfortable", "Very comfortable"]
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Tag IDs associated with this instrument",
+            "example": ["60d21b4667d0d8992e610c85", "60d21b4667d0d8992e610c86"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "InstrumentList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Instrument" } },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "InstrumentTag": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Instrument Tag ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "name": { "type": "string", "description": "Tag name", "example": "Teamwork" },
+          "description": {
+            "type": "string",
+            "description": "Tag description",
+            "example": "Questions related to teamwork and collaboration skills"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "InstrumentTagList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/InstrumentTag" } },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "LogicTag": {
+        "type": "object",
+        "required": ["name", "slug"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Logic Tag ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "name": { "type": "string", "description": "Tag name", "example": "Algorithms" },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly identifier",
+            "example": "algorithms"
+          },
+          "description": {
+            "type": "string",
+            "description": "Tag description",
+            "example": "Questions related to algorithmic problem-solving"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "LogicTagList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/LogicTag" } },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "Choice": {
+        "type": "object",
+        "required": ["text", "is_correct"],
+        "properties": {
+          "text": { "type": "string", "description": "Choice text", "example": "O(n log n)" },
+          "is_correct": {
+            "type": "boolean",
+            "description": "Whether this choice is correct",
+            "example": true
+          }
+        }
+      },
+      "LogicQuestion": {
+        "type": "object",
+        "required": ["question", "level", "tag_ids", "type", "answer_explanation"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Logic Question ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "question": {
+            "type": "string",
+            "description": "Question text",
+            "example": "What is the time complexity of the merge sort algorithm?"
+          },
+          "level": {
+            "type": "integer",
+            "description": "Difficulty level (1-6)",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 6
+          },
+          "tag_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Tag IDs associated with this question",
+            "example": ["60d21b4667d0d8992e610c85", "60d21b4667d0d8992e610c86"]
+          },
+          "type": {
+            "type": "string",
+            "description": "Question type",
+            "enum": ["multiple_choice", "open_question"],
+            "example": "multiple_choice"
+          },
+          "choices": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Choice" },
+            "description": "Answer choices (required for multiple_choice type)"
+          },
+          "answer_explanation": {
+            "type": "string",
+            "description": "Explanation of the correct answer",
+            "example": "Merge sort has a time complexity of O(n log n) because it divides the array in half at each step (log n) and then performs a linear-time merge operation (n)."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "LogicQuestionList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/LogicQuestion" } },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "required": ["type", "payload"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Job ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "type": { "type": "string", "description": "Job type", "example": "question_generation" },
+          "payload": { "type": "object", "description": "Job payload data" },
+          "status": {
+            "type": "string",
+            "description": "Job status",
+            "enum": ["new", "pending", "processing", "done", "failed"],
+            "example": "pending"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "JobList": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Job" } },
+          "pagination": { "$ref": "#/components/schemas/Pagination" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "username": { "type": "string", "description": "Username", "example": "johndoe" },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address",
+            "example": "john.doe@example.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "UserList": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/User" } },
+          "pagination": { "$ref": "#/components/schemas/PaginationInfo" }
         }
       }
     }
@@ -1515,7 +1863,7 @@
           },
           {
             "in": "query",
-            "name": "limit",
+            "name": "page_size",
             "schema": { "type": "integer", "default": 10 },
             "description": "Number of items per page"
           },
@@ -1620,12 +1968,10 @@
                     "pagination": {
                       "type": "object",
                       "properties": {
+                        "total": { "type": "integer", "example": 25 },
                         "page": { "type": "integer", "example": 1 },
-                        "limit": { "type": "integer", "example": 10 },
-                        "totalCount": { "type": "integer", "example": 25 },
-                        "totalPages": { "type": "integer", "example": 3 },
-                        "hasNextPage": { "type": "boolean", "example": true },
-                        "hasPrevPage": { "type": "boolean", "example": false }
+                        "page_size": { "type": "integer", "example": 10 },
+                        "total_pages": { "type": "integer", "example": 3 }
                       }
                     }
                   }
@@ -2119,7 +2465,7 @@
           },
           {
             "in": "query",
-            "name": "limit",
+            "name": "page_size",
             "schema": { "type": "integer", "default": 10 },
             "description": "Number of items per page"
           },
@@ -2201,12 +2547,10 @@
                     "pagination": {
                       "type": "object",
                       "properties": {
+                        "total": { "type": "integer", "example": 15 },
                         "page": { "type": "integer", "example": 1 },
-                        "limit": { "type": "integer", "example": 10 },
-                        "totalCount": { "type": "integer", "example": 15 },
-                        "totalPages": { "type": "integer", "example": 2 },
-                        "hasNextPage": { "type": "boolean", "example": true },
-                        "hasPrevPage": { "type": "boolean", "example": false }
+                        "page_size": { "type": "integer", "example": 10 },
+                        "total_pages": { "type": "integer", "example": 2 }
                       }
                     }
                   }
@@ -2385,7 +2729,7 @@
           },
           {
             "in": "query",
-            "name": "limit",
+            "name": "page_size",
             "schema": { "type": "integer", "default": 10 },
             "description": "Number of items per page"
           },
@@ -2418,9 +2762,10 @@
                     "pagination": {
                       "type": "object",
                       "properties": {
-                        "page": { "type": "integer" },
-                        "limit": { "type": "integer" },
-                        "total": { "type": "integer" }
+                        "total": { "type": "integer", "example": 50 },
+                        "page": { "type": "integer", "example": 1 },
+                        "page_size": { "type": "integer", "example": 20 },
+                        "total_pages": { "type": "integer", "example": 3 }
                       }
                     }
                   }
@@ -2640,7 +2985,7 @@
           },
           {
             "in": "query",
-            "name": "limit",
+            "name": "page_size",
             "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 },
             "description": "Number of items per page"
           },
@@ -3067,6 +3412,341 @@
         }
       }
     },
+    "/api/oauth/authorize": {
+      "get": {
+        "summary": "OAuth 2.0 authorization endpoint (form)",
+        "description": "Renders the authorization form for the user to approve or deny",
+        "tags": ["OAuth"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "response_type",
+            "required": true,
+            "schema": { "type": "string", "enum": ["code"] },
+            "description": "The response type (must be 'code' for authorization code flow)"
+          },
+          {
+            "in": "query",
+            "name": "client_id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The client ID"
+          },
+          {
+            "in": "query",
+            "name": "redirect_uri",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The redirect URI"
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "schema": { "type": "string" },
+            "description": "The requested scope"
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "schema": { "type": "string" },
+            "description": "An opaque value used for security"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Authorization form rendered successfully" },
+          "400": { "description": "Invalid request" }
+        }
+      },
+      "post": {
+        "summary": "OAuth 2.0 authorization endpoint (decision)",
+        "description": "Handles the user's decision to approve or deny the authorization",
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "client_id": { "type": "string", "description": "The client ID" },
+                  "redirect_uri": { "type": "string", "description": "The redirect URI" },
+                  "response_type": {
+                    "type": "string",
+                    "enum": ["code"],
+                    "description": "The response type"
+                  },
+                  "scope": { "type": "string", "description": "The requested scope" },
+                  "state": { "type": "string", "description": "An opaque value used for security" },
+                  "approved": {
+                    "type": "string",
+                    "enum": [true, false],
+                    "description": "Whether the user approved the authorization"
+                  }
+                },
+                "required": ["client_id", "redirect_uri", "response_type", "approved"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "302": {
+            "description": "Redirects to the redirect URI with authorization code or error"
+          },
+          "400": { "description": "Invalid request" }
+        }
+      }
+    },
+    "/api/oauth/clients": {
+      "get": {
+        "summary": "Get all OAuth clients",
+        "description": "Returns a list of all OAuth clients",
+        "tags": ["OAuth"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of OAuth clients" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "post": {
+        "summary": "Create a new OAuth client",
+        "description": "Creates a new OAuth client",
+        "tags": ["OAuth"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "clientId": { "type": "string", "description": "The client ID" },
+                  "clientSecret": { "type": "string", "description": "The client secret" },
+                  "redirectUris": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "The redirect URIs"
+                  },
+                  "grants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["password", "refresh_token", "authorization_code"]
+                    },
+                    "description": "The grant types"
+                  }
+                },
+                "required": ["clientId", "clientSecret"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "OAuth client created successfully" },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Unauthorized" },
+          "409": { "description": "OAuth client already exists" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/oauth/clients/{clientId}": {
+      "get": {
+        "summary": "Get an OAuth client by ID",
+        "description": "Returns an OAuth client by ID",
+        "tags": ["OAuth"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The client ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OAuth client" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "OAuth client not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "summary": "Update an OAuth client",
+        "description": "Updates an OAuth client",
+        "tags": ["OAuth"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The client ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "redirectUris": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "The redirect URIs"
+                  },
+                  "grants": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["password", "refresh_token", "authorization_code"]
+                    },
+                    "description": "The grant types"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OAuth client updated successfully" },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "OAuth client not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete an OAuth client",
+        "description": "Deletes an OAuth client",
+        "tags": ["OAuth"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The client ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OAuth client deleted successfully" },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "OAuth client not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/oauth/token": {
+      "post": {
+        "summary": "OAuth 2.0 token endpoint",
+        "description": "Obtain an access token using various grant types (password, refresh_token, authorization_code)",
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grant_type": {
+                    "type": "string",
+                    "enum": ["password", "refresh_token", "authorization_code"],
+                    "description": "The grant type"
+                  },
+                  "client_id": { "type": "string", "description": "The client ID" },
+                  "client_secret": { "type": "string", "description": "The client secret" },
+                  "username": {
+                    "type": "string",
+                    "description": "The username (for password grant)"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password (for password grant)"
+                  },
+                  "refresh_token": {
+                    "type": "string",
+                    "description": "The refresh token (for refresh_token grant)"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "The authorization code (for authorization_code grant)"
+                  },
+                  "redirect_uri": {
+                    "type": "string",
+                    "description": "The redirect URI (for authorization_code grant)"
+                  }
+                },
+                "required": ["grant_type", "client_id", "client_secret"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access token generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": { "type": "string", "description": "The access token" },
+                    "token_type": { "type": "string", "example": "Bearer" },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Token expiration time in seconds"
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "description": "The refresh token (if applicable)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/oauth/revoke": {
+      "post": {
+        "summary": "OAuth 2.0 token revocation endpoint",
+        "description": "Revoke an access token or refresh token",
+        "tags": ["OAuth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string", "description": "The token to revoke" },
+                  "token_type_hint": {
+                    "type": "string",
+                    "enum": ["access_token", "refresh_token"],
+                    "description": "The type of token to revoke"
+                  },
+                  "client_id": { "type": "string", "description": "The client ID" },
+                  "client_secret": { "type": "string", "description": "The client secret" }
+                },
+                "required": ["token", "client_id", "client_secret"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Token revoked successfully" },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
     "/api/positions": {
       "post": {
         "summary": "Create a new position",
@@ -3151,7 +3831,7 @@
           },
           {
             "in": "query",
-            "name": "limit",
+            "name": "page_size",
             "schema": { "type": "integer", "default": 10 },
             "description": "Number of items per page"
           },
@@ -3184,9 +3864,10 @@
                     "pagination": {
                       "type": "object",
                       "properties": {
-                        "page": { "type": "integer" },
-                        "limit": { "type": "integer" },
-                        "total": { "type": "integer" }
+                        "total": { "type": "integer", "example": 50 },
+                        "page": { "type": "integer", "example": 1 },
+                        "page_size": { "type": "integer", "example": 20 },
+                        "total_pages": { "type": "integer", "example": 3 }
                       }
                     }
                   }
@@ -3406,15 +4087,30 @@
                     "description": "The topic for which questions should be generated",
                     "example": "Data Structures"
                   },
+                  "topic_id": {
+                    "type": "string",
+                    "description": "The ID of the topic (optional, will be resolved from topic if not provided)",
+                    "example": "60d21b4667d0d8992e610c85"
+                  },
                   "language": {
                     "type": "string",
                     "description": "The programming language for the questions",
                     "example": "JavaScript"
                   },
+                  "language_id": {
+                    "type": "string",
+                    "description": "The ID of the language (optional, will be resolved from language if not provided)",
+                    "example": "60d21b4667d0d8992e610c86"
+                  },
                   "position": {
                     "type": "string",
                     "description": "Position level (intern, fresher, junior, middle, senior, expert)",
                     "example": "junior"
+                  },
+                  "position_id": {
+                    "type": "string",
+                    "description": "The ID of the position (optional, will be resolved from position if not provided)",
+                    "example": "60d21b4667d0d8992e610c87"
                   }
                 }
               }
@@ -3443,11 +4139,26 @@
                           "difficulty": { "type": "string" },
                           "category": { "type": "string" },
                           "topic": { "type": "string" },
+                          "topic_id": {
+                            "type": "string",
+                            "description": "The ID of the topic",
+                            "example": "60d21b4667d0d8992e610c85"
+                          },
                           "language": { "type": "string" },
+                          "language_id": {
+                            "type": "string",
+                            "description": "The ID of the language",
+                            "example": "60d21b4667d0d8992e610c86"
+                          },
                           "position": {
                             "type": "string",
                             "description": "Text representation of the position level",
                             "example": "Junior Developer"
+                          },
+                          "position_id": {
+                            "type": "string",
+                            "description": "The ID of the position",
+                            "example": "60d21b4667d0d8992e610c87"
                           },
                           "positionLevel": {
                             "type": "integer",
@@ -4157,6 +4868,14 @@
           },
           {
             "in": "query",
+            "name": "topic_id",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "The ID(s) of the topics to search for, separated by commas (will be resolved from topic if not provided)",
+            "example": "60d21b4667d0d8992e610c85,60d21b4667d0d8992e610c86"
+          },
+          {
+            "in": "query",
             "name": "language",
             "required": false,
             "schema": { "type": "string" },
@@ -4165,11 +4884,27 @@
           },
           {
             "in": "query",
+            "name": "language_id",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "The ID(s) of the languages to search for, separated by commas (will be resolved from language if not provided)",
+            "example": "60d21b4667d0d8992e610c87,60d21b4667d0d8992e610c88"
+          },
+          {
+            "in": "query",
             "name": "position",
             "required": false,
             "schema": { "type": "string" },
             "description": "The experience level(s) for the questions, separated by commas (e.g., junior,middle,senior)",
             "example": "junior,middle"
+          },
+          {
+            "in": "query",
+            "name": "position_id",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "The ID(s) of the positions to search for, separated by commas (will be resolved from position if not provided)",
+            "example": "60d21b4667d0d8992e610c89,60d21b4667d0d8992e610c90"
           },
           {
             "in": "query",
@@ -4298,15 +5033,30 @@
                             "description": "Topic of the question",
                             "example": "JavaScript"
                           },
+                          "topic_id": {
+                            "type": "string",
+                            "description": "ID of the topic",
+                            "example": "60d21b4667d0d8992e610c85"
+                          },
                           "language": {
                             "type": "string",
                             "description": "Programming language of the question",
                             "example": "JavaScript"
                           },
+                          "language_id": {
+                            "type": "string",
+                            "description": "ID of the language",
+                            "example": "60d21b4667d0d8992e610c87"
+                          },
                           "position": {
                             "type": "string",
                             "description": "Position level the question is targeted for",
                             "example": "Junior"
+                          },
+                          "position_id": {
+                            "type": "string",
+                            "description": "ID of the position",
+                            "example": "60d21b4667d0d8992e610c89"
                           },
                           "positionLevel": {
                             "type": "integer",
@@ -4478,6 +5228,38 @@
                       }
                     }
                   },
+                  "logic_questions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["logic_question_id"],
+                      "properties": {
+                        "logic_question_id": {
+                          "type": "string",
+                          "description": "ID of the logic question"
+                        },
+                        "answer": {
+                          "type": "string",
+                          "description": "Answer to the logic question (e.g., 'true,false,true')"
+                        },
+                        "other": {
+                          "type": "string",
+                          "description": "Additional text for the logic question response"
+                        },
+                        "point": {
+                          "type": "number",
+                          "minimum": 0,
+                          "default": 0,
+                          "description": "Score given to the logic question response"
+                        },
+                        "is_skip": {
+                          "type": "integer",
+                          "enum": [0, 1],
+                          "description": "Whether the logic question was skipped (0 or 1)"
+                        }
+                      }
+                    }
+                  },
                   "essay": {
                     "type": "object",
                     "properties": {
@@ -4505,7 +5287,7 @@
         "responses": {
           "201": { "description": "Submission created successfully" },
           "400": { "description": "Invalid input data" },
-          "404": { "description": "Candidate, question, or instrument not found" },
+          "404": { "description": "Candidate, question, instrument, or logic question not found" },
           "500": { "description": "Server error" }
         }
       }
@@ -4680,6 +5462,38 @@
                       }
                     }
                   },
+                  "logic_questions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["logic_question_id"],
+                      "properties": {
+                        "logic_question_id": {
+                          "type": "string",
+                          "description": "ID of the logic question"
+                        },
+                        "answer": {
+                          "type": "string",
+                          "description": "Answer to the logic question (e.g., 'true,false,true')"
+                        },
+                        "other": {
+                          "type": "string",
+                          "description": "Additional text for the logic question response"
+                        },
+                        "point": {
+                          "type": "number",
+                          "minimum": 0,
+                          "default": 0,
+                          "description": "Score given to the logic question response"
+                        },
+                        "is_skip": {
+                          "type": "integer",
+                          "enum": [0, 1],
+                          "description": "Whether the logic question was skipped (0 or 1)"
+                        }
+                      }
+                    }
+                  },
                   "essay": {
                     "type": "object",
                     "properties": {
@@ -4707,7 +5521,7 @@
         "responses": {
           "200": { "description": "Submission updated successfully" },
           "400": { "description": "Invalid input data" },
-          "404": { "description": "Submission, question, or instrument not found" },
+          "404": { "description": "Submission, question, instrument, or logic question not found" },
           "500": { "description": "Server error" }
         }
       }
@@ -4828,6 +5642,285 @@
           }
         }
       }
+    },
+    "/api/register": {
+      "post": {
+        "summary": "Create a new user (public endpoint)",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "username", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "username": { "type": "string" },
+                  "password": { "type": "string", "format": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "400": { "description": "Invalid input" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "summary": "Get all users with pagination",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": { "type": "integer", "default": 1 },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": { "type": "integer", "default": 20 },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "username",
+            "schema": { "type": "string" },
+            "description": "Filter by username"
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "schema": { "type": "string" },
+            "description": "Filter by email"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "type": "string",
+              "enum": ["createdAt", "email", "username"],
+              "default": "createdAt"
+            },
+            "description": "Field to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sort_direction",
+            "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" },
+            "description": "Sort direction (ascending or descending)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UserList" } }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UnauthorizedError" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "username", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "username": { "type": "string" },
+                  "password": { "type": "string", "format": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UnauthorizedError" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get a user by ID",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UnauthorizedError" } }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NotFoundResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a user",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "username": { "type": "string" },
+                  "password": { "type": "string", "format": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UnauthorizedError" } }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NotFoundResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "204": { "description": "User deleted" },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UnauthorizedError" } }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NotFoundResponse" } }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+            }
+          }
+        }
+      }
     }
   },
   "tags": [
@@ -4839,6 +5932,7 @@
       "description": "API endpoints for managing instruments (assessment questions)"
     },
     { "name": "Languages", "description": "API endpoints for managing programming languages" },
+    { "name": "OAuth", "description": "OAuth 2.0 authentication endpoints" },
     { "name": "Positions", "description": "API endpoints for managing positions" },
     { "name": "Questions", "description": "API endpoints for generating and managing questions" },
     { "name": "Submissions", "description": "Submission management endpoints" },
