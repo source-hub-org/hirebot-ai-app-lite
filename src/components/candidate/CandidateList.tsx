@@ -29,17 +29,23 @@ function CandidateList() {
   const { candidates, loading, error, pagination, fetchCandidates } = useCandidates(searchParams)
 
   // Handle search with useCallback to prevent unnecessary re-renders
-  const handleSearch = useCallback((params: CandidateQueryParams) => {
-    setSearchParams(params)
-    fetchCandidates(params)
-  }, [fetchCandidates])
+  const handleSearch = useCallback(
+    (params: CandidateQueryParams) => {
+      setSearchParams(params)
+      fetchCandidates(params)
+    },
+    [fetchCandidates]
+  )
 
   // Handle pagination with useCallback
-  const handlePageChange = useCallback((newPage: number) => {
-    const updatedParams = { ...searchParams, page: newPage }
-    setSearchParams(updatedParams)
-    fetchCandidates(updatedParams)
-  }, [searchParams, fetchCandidates])
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      const updatedParams = { ...searchParams, page: newPage }
+      setSearchParams(updatedParams)
+      fetchCandidates(updatedParams)
+    },
+    [searchParams, fetchCandidates]
+  )
 
   // Format date for display - memoize this function
   const formatDate = useCallback((dateString?: string) => {

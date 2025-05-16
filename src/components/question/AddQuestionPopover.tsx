@@ -238,8 +238,8 @@ export default function AddQuestionPopover() {
           <Button variant="outline" onClick={handleCancel} disabled={isSearching}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleAddQuestions} 
+          <Button
+            onClick={handleAddQuestions}
             disabled={isSearching || isLoading.topics || isLoading.languages || isLoading.positions}
           >
             {isSearching ? 'Searching...' : 'Add Questions'}

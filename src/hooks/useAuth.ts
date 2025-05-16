@@ -1,6 +1,6 @@
 // src/hooks/useAuth.ts
 import { useRouter } from 'next/navigation'
-import { useAuthContext } from '../providers/AuthProvider'
+import { useAuthContext } from '../providers/Providers'
 import { LoginCredentials } from '../types/auth'
 
 /**
@@ -20,7 +20,7 @@ export function useAuth() {
     try {
       await auth.login(credentials.email, credentials.password)
       router.push(redirectPath)
-    } catch (err) {
+    } catch (_) {
       // Error is already handled in the context
     }
   }

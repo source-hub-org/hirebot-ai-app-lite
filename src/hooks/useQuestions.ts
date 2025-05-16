@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { searchQuestions, submitAnswers } from '@/services/questions.service'
-import { Question, AnswerSubmission } from '@/types/api'
+import { AnswerSubmission } from '@/types/api'
 
 interface QuestionSearchParams {
   topic?: string
@@ -42,7 +42,7 @@ export function useQuestions() {
       const result = await searchQuestions(params)
       return result.questions
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Update the questions in the cache
       queryClient.setQueryData(['questions'], data)
     },

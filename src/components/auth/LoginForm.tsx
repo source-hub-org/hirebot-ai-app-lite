@@ -73,7 +73,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
     try {
       await login(credentials)
-    } catch (err) {
+    } catch (_) {
       // Error is handled by the useAuth hook
     }
   }

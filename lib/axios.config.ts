@@ -1,5 +1,10 @@
 // lib/axios.config.ts
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios'
 import { ErrorResponse, ValidationErrorResponse } from '@/types/api'
 
 // Create a map to store request cancellation tokens
@@ -123,9 +128,7 @@ api.interceptors.response.use(
 
     // Handle other errors
     return Promise.reject(
-      error.response?.data?.message
-        ? new Error(error.response.data.message)
-        : error
+      error.response?.data?.message ? new Error(error.response.data.message) : error
     )
   }
 )

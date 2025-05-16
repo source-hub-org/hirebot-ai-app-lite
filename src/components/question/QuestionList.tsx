@@ -19,14 +19,8 @@ function QuestionList() {
   const { candidateId } = useCandidateContext()
 
   // Use the questions hook for state management
-  const {
-    questions,
-    isLoading,
-    error,
-    submitAnswers,
-    isSubmitting,
-    submissionResult
-  } = useQuestions()
+  const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
+    useQuestions()
 
   // State to store all submissions
   const [submission, setSubmission] = useState<Submission>({

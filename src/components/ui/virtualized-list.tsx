@@ -23,10 +23,9 @@ export function VirtualizedList<T>({
   const containerRef = useRef<HTMLDivElement>(null)
   const [scrollTop, setScrollTop] = useState(0)
 
-  // Calculate the range of visible items
-  const visibleItemsCount = Math.ceil(height / itemHeight)
+  // Calculate the total height
   const totalHeight = items.length * itemHeight
-  
+
   // Calculate the start and end indices of the visible items
   const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan)
   const endIndex = Math.min(
@@ -72,11 +71,7 @@ export function VirtualizedList<T>({
   })
 
   return (
-    <div
-      ref={containerRef}
-      className={cn('overflow-auto relative', className)}
-      style={{ height }}
-    >
+    <div ref={containerRef} className={cn('overflow-auto relative', className)} style={{ height }}>
       <div style={{ height: totalHeight, position: 'relative' }}>{visibleItems}</div>
     </div>
   )
