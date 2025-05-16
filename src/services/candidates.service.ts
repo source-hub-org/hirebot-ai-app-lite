@@ -21,8 +21,16 @@ export async function getCandidates(params: CandidateQueryParams = {}): Promise<
 }> {
   try {
     const queryString = buildQueryString(params)
+
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.get<PaginatedResponse<Candidate[]>>(
-      `/api/proxy/candidates${queryString}`
+      `/api/proxy/candidates${queryString}`,
+      config
     )
 
     return {
@@ -57,7 +65,13 @@ export async function getCandidates(params: CandidateQueryParams = {}): Promise<
  */
 export async function getCandidateById(id: string): Promise<Candidate> {
   try {
-    const response = await api.get<ApiResponse<Candidate>>(`/api/proxy/candidates/${id}`)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Candidate>>(`/api/proxy/candidates/${id}`, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -74,7 +88,17 @@ export async function createCandidate(
   candidate: Omit<Candidate, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Candidate> {
   try {
-    const response = await api.post<ApiResponse<Candidate>>('/api/proxy/candidates', candidate)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.post<ApiResponse<Candidate>>(
+      '/api/proxy/candidates',
+      candidate,
+      config
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -93,7 +117,17 @@ export async function updateCandidate(
   candidate: Partial<Omit<Candidate, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Candidate> {
   try {
-    const response = await api.put<ApiResponse<Candidate>>(`/api/proxy/candidates/${id}`, candidate)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.put<ApiResponse<Candidate>>(
+      `/api/proxy/candidates/${id}`,
+      candidate,
+      config
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -108,8 +142,15 @@ export async function updateCandidate(
  */
 export async function deleteCandidate(id: string): Promise<{ message: string }> {
   try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.delete<ApiResponse<{ message: string }>>(
-      `/api/proxy/candidates/${id}`
+      `/api/proxy/candidates/${id}`,
+      config
     )
     return handleSuccessResponse(response)
   } catch (error) {

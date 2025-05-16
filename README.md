@@ -18,6 +18,7 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 - **API Integration**: Custom API services for questions, candidates, and submissions
 
 ## Screenshots
+
 ![HireBot AI App Lite Screenshot](./assets/screenshot.png)
 
 ## Getting Started
