@@ -15,9 +15,9 @@ import { useEffect, useState } from 'react'
 import { getTopics } from '@/services/topics.service'
 import { getLanguages } from '@/services/languages.service'
 import { getPositions } from '@/services/positions.service'
-import { searchQuestions } from '@/services/questions.service'
 import { Topic, Language, Position } from '@/types/api'
 import { useCandidateContext } from '@/contexts/CandidateContext'
+import { useQuestions } from '@/hooks/useQuestions'
 
 export default function AddQuestionPopover() {
   const { candidateId } = useCandidateContext()
@@ -66,7 +66,16 @@ export default function AddQuestionPopover() {
     }
   }
 
+  // Use the questions hook for state management
+  const { searchQuestions, isSearching, searchError } = useQuestions()
+
   const handleAddQuestions = async () => {
+    // Validate required fields
+    if (!selectedTopic || !selectedLanguage || !selectedPosition || !pageSize) {
+      alert('Please fill in all fields')
+      return
+    }
+
     // Prepare data for API call
     const formData = {
       topic: selectedTopic,
@@ -75,22 +84,12 @@ export default function AddQuestionPopover() {
       page_size: parseInt(pageSize),
     }
 
-    console.log('Form data:', formData)
+    // Call the searchQuestions mutation
+    searchQuestions(formData)
 
-    try {
-      // Call the searchQuestions API
-      const { questions } = await searchQuestions(formData)
-
-      // Use a custom event to pass the questions to the QuestionList component
-      const event = new CustomEvent('questionsLoaded', {
-        detail: { questions },
-      })
-      window.dispatchEvent(event)
-
-      // Close the popover
+    // Close the popover only if there's no error
+    if (!searchError) {
       setOpen(false)
-    } catch (error) {
-      console.error('Error searching questions:', error)
     }
   }
 
@@ -236,11 +235,23 @@ export default function AddQuestionPopover() {
         </div>
 
         <div className="flex justify-between">
-          <Button variant="outline" onClick={handleCancel}>
+          <Button variant="outline" onClick={handleCancel} disabled={isSearching}>
             Cancel
           </Button>
-          <Button onClick={handleAddQuestions}>Add Questions</Button>
+          <Button 
+            onClick={handleAddQuestions} 
+            disabled={isSearching || isLoading.topics || isLoading.languages || isLoading.positions}
+          >
+            {isSearching ? 'Searching...' : 'Add Questions'}
+          </Button>
         </div>
+
+        {/* Show error message if search fails */}
+        {searchError && (
+          <div className="mt-2 p-2 text-sm text-red-600 bg-red-50 rounded border border-red-200">
+            Error: {(searchError as Error).message}
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   )

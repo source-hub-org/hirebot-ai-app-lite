@@ -1,5 +1,6 @@
 // src/components/candidate/CandidateList.tsx
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
+import dynamic from 'next/dynamic'
 import {
   Table,
   TableBody,
@@ -10,10 +11,14 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { CandidateQueryParams } from '@/types/api'
-import CandidateSearch from './CandidateSearch'
 import { useCandidates } from '@/hooks/useCandidates'
 
-export default function CandidateList() {
+// Dynamically import CandidateSearch component for code splitting
+const CandidateSearch = dynamic(() => import('./CandidateSearch'), {
+  loading: () => <div className="h-12 w-full bg-gray-100 animate-pulse rounded-md"></div>,
+})
+
+function CandidateList() {
   const [searchParams, setSearchParams] = useState<CandidateQueryParams>({
     page: 1,
     page_size: 10,
@@ -23,24 +28,24 @@ export default function CandidateList() {
 
   const { candidates, loading, error, pagination, fetchCandidates } = useCandidates(searchParams)
 
-  // Handle search
-  const handleSearch = (params: CandidateQueryParams) => {
+  // Handle search with useCallback to prevent unnecessary re-renders
+  const handleSearch = useCallback((params: CandidateQueryParams) => {
     setSearchParams(params)
     fetchCandidates(params)
-  }
+  }, [fetchCandidates])
 
-  // Handle pagination
-  const handlePageChange = (newPage: number) => {
+  // Handle pagination with useCallback
+  const handlePageChange = useCallback((newPage: number) => {
     const updatedParams = { ...searchParams, page: newPage }
     setSearchParams(updatedParams)
     fetchCandidates(updatedParams)
-  }
+  }, [searchParams, fetchCandidates])
 
-  // Format date for display
-  const formatDate = (dateString?: string) => {
+  // Format date for display - memoize this function
+  const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return 'N/A'
     return new Date(dateString).toLocaleDateString()
-  }
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -121,3 +126,6 @@ export default function CandidateList() {
     </div>
   )
 }
+
+// Export the memoized component to prevent unnecessary re-renders
+export default memo(CandidateList)
