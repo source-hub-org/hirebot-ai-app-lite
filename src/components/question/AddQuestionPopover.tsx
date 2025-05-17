@@ -11,21 +11,23 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getTopics } from '@/services/topics.service'
 import { getLanguages } from '@/services/languages.service'
 import { getPositions } from '@/services/positions.service'
 import { Topic, Language, Position } from '@/types/api'
 import { useCandidateContext } from '@/contexts/CandidateContext'
 import { useQuestions } from '@/hooks/useQuestions'
+import { useLoading } from '@/hooks/useLoading'
 
 export default function AddQuestionPopover() {
   const { candidateId } = useCandidateContext()
+  const { withLoading } = useLoading()
   const [open, setOpen] = useState(false)
   const [topics, setTopics] = useState<Topic[]>([])
   const [languages, setLanguages] = useState<Language[]>([])
   const [positions, setPositions] = useState<Position[]>([])
-  const [isLoading, setIsLoading] = useState({
+  const [formLoading, setFormLoading] = useState({
     topics: false,
     languages: false,
     positions: false,
@@ -37,34 +39,36 @@ export default function AddQuestionPopover() {
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [pageSize, setPageSize] = useState<string>('')
 
+  const fetchData = useCallback(async () => {
+    setFormLoading({ topics: true, languages: true, positions: true })
+
+    try {
+      await withLoading(async () => {
+        // Fetch topics
+        const topicsData = await getTopics()
+        setTopics(topicsData)
+
+        // Fetch languages
+        const languagesData = await getLanguages({ limit: 100 })
+        setLanguages(languagesData.languages)
+
+        // Fetch positions
+        const positionsData = await getPositions({ limit: 100 })
+        setPositions(positionsData.positions)
+      })
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setFormLoading({ topics: false, languages: false, positions: false })
+    }
+  }, [withLoading, setTopics, setLanguages, setPositions, setFormLoading])
+
   // Fetch data when the popover opens
   useEffect(() => {
     if (open) {
       fetchData()
     }
-  }, [open])
-
-  const fetchData = async () => {
-    try {
-      setIsLoading({ topics: true, languages: true, positions: true })
-
-      // Fetch topics
-      const topicsData = await getTopics()
-      setTopics(topicsData)
-
-      // Fetch languages
-      const languagesData = await getLanguages({ limit: 100 })
-      setLanguages(languagesData.languages)
-
-      // Fetch positions
-      const positionsData = await getPositions({ limit: 100 })
-      setPositions(positionsData.positions)
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setIsLoading({ topics: false, languages: false, positions: false })
-    }
-  }
+  }, [open, fetchData])
 
   // Use the questions hook for state management
   const { searchQuestions, isSearching, searchError } = useQuestions()
@@ -84,13 +88,15 @@ export default function AddQuestionPopover() {
       page_size: parseInt(pageSize),
     }
 
-    // Call the searchQuestions mutation
-    searchQuestions(formData)
+    // Call the searchQuestions mutation with loading indicator
+    await withLoading(async () => {
+      await searchQuestions(formData)
 
-    // Close the popover only if there's no error
-    if (!searchError) {
-      setOpen(false)
-    }
+      // Close the popover only if there's no error
+      if (!searchError) {
+        setOpen(false)
+      }
+    })
   }
 
   // Handle clicks inside the popover to prevent it from closing when interacting with MultiSelect
@@ -144,10 +150,10 @@ export default function AddQuestionPopover() {
             <Select
               value={selectedTopic}
               onValueChange={setSelectedTopic}
-              disabled={isLoading.topics}
+              disabled={formLoading.topics}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={isLoading.topics ? 'Loading...' : 'Select topic'} />
+                <SelectValue placeholder={formLoading.topics ? 'Loading...' : 'Select topic'} />
               </SelectTrigger>
               <SelectContent>
                 {topics.map(topic => (
@@ -168,10 +174,12 @@ export default function AddQuestionPopover() {
             <Select
               value={selectedLanguage}
               onValueChange={setSelectedLanguage}
-              disabled={isLoading.languages}
+              disabled={formLoading.languages}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={isLoading.languages ? 'Loading...' : 'Select language'} />
+                <SelectValue
+                  placeholder={formLoading.languages ? 'Loading...' : 'Select language'}
+                />
               </SelectTrigger>
               <SelectContent>
                 {languages.map(language => (
@@ -195,10 +203,12 @@ export default function AddQuestionPopover() {
             <Select
               value={selectedPosition}
               onValueChange={setSelectedPosition}
-              disabled={isLoading.positions}
+              disabled={formLoading.positions}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={isLoading.positions ? 'Loading...' : 'Select position'} />
+                <SelectValue
+                  placeholder={formLoading.positions ? 'Loading...' : 'Select position'}
+                />
               </SelectTrigger>
               <SelectContent>
                 {positions.map(position => (
@@ -240,7 +250,9 @@ export default function AddQuestionPopover() {
           </Button>
           <Button
             onClick={handleAddQuestions}
-            disabled={isSearching || isLoading.topics || isLoading.languages || isLoading.positions}
+            disabled={
+              isSearching || formLoading.topics || formLoading.languages || formLoading.positions
+            }
           >
             {isSearching ? 'Searching...' : 'Add Questions'}
           </Button>

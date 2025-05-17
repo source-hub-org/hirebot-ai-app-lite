@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { CandidateQueryParams } from '@/types/api'
 import { useCandidates } from '@/hooks/useCandidates'
+import { useLoading } from '@/hooks/useLoading'
 
 // Dynamically import CandidateSearch component for code splitting
 const CandidateSearch = dynamic(() => import('./CandidateSearch'), {
@@ -27,24 +28,29 @@ function CandidateList() {
   })
 
   const { candidates, loading, error, pagination, fetchCandidates } = useCandidates(searchParams)
+  const { withLoading } = useLoading()
 
   // Handle search with useCallback to prevent unnecessary re-renders
   const handleSearch = useCallback(
-    (params: CandidateQueryParams) => {
+    async (params: CandidateQueryParams) => {
       setSearchParams(params)
-      fetchCandidates(params)
+      await withLoading(async () => {
+        await fetchCandidates(params)
+      })
     },
-    [fetchCandidates]
+    [fetchCandidates, withLoading]
   )
 
   // Handle pagination with useCallback
   const handlePageChange = useCallback(
-    (newPage: number) => {
+    async (newPage: number) => {
       const updatedParams = { ...searchParams, page: newPage }
       setSearchParams(updatedParams)
-      fetchCandidates(updatedParams)
+      await withLoading(async () => {
+        await fetchCandidates(updatedParams)
+      })
     },
-    [searchParams, fetchCandidates]
+    [searchParams, fetchCandidates, withLoading]
   )
 
   // Format date for display - memoize this function

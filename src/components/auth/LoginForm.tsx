@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useLoading } from '@/hooks/useLoading'
 import { LoginCredentials } from '@/types/auth'
 
 /**
@@ -25,6 +26,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const { login, isLoading, error } = useAuth()
+  const { withLoading } = useLoading()
 
   /**
    * Handles input changes
@@ -72,7 +74,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     }
 
     try {
-      await login(credentials)
+      // Use withLoading to show global loading state during login
+      await withLoading(async () => {
+        await login(credentials)
+      })
     } catch (_) {
       console.log(_)
       // Error is handled by the useAuth hook

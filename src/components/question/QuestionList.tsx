@@ -7,6 +7,7 @@ import { AnswerSubmission, Question } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { useCandidateContext } from '@/contexts/CandidateContext'
 import { useQuestions } from '@/hooks/useQuestions'
+import { useLoading } from '@/hooks/useLoading'
 import { VirtualizedList } from '@/components/ui/virtualized-list'
 
 interface Submission {
@@ -21,6 +22,9 @@ function QuestionList() {
   // Use the questions hook for state management
   const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
     useQuestions()
+
+  // Use the loading hook for global loading state
+  const { withLoading } = useLoading()
 
   // State to store all submissions
   const [submission, setSubmission] = useState<Submission>({
@@ -85,7 +89,10 @@ function QuestionList() {
       console.warn('No candidate selected. Using demo ID as fallback.')
     }
 
-    submitAnswers(submissionData)
+    // Use withLoading to show global loading state during submission
+    await withLoading(async () => {
+      await submitAnswers(submissionData)
+    })
   }
 
   if (isLoading) {

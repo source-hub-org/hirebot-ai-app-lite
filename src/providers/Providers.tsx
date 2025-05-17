@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { CandidateProvider } from '@/contexts/CandidateContext'
+import { LoadingProvider } from '@/contexts/LoadingContext'
 import authService from '../services/auth.service'
 import { UserProfile } from '../types/auth'
 
@@ -141,7 +142,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <CandidateProvider>{children}</CandidateProvider>
+        <LoadingProvider>
+          <CandidateProvider>{children}</CandidateProvider>
+        </LoadingProvider>
       </AuthProvider>
       {process.env.NODE_ENV !== 'production' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
