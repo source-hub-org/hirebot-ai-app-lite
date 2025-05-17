@@ -21,17 +21,6 @@ export default function LoginPage() {
   }, [isAuthenticated, isLoading, router])
 
   // Don't render the form while checking authentication status
-  if (isLoading) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="bg-white grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
