@@ -21,7 +21,7 @@ export function useAuth() {
       await auth.login(credentials.email, credentials.password)
       router.push(redirectPath)
     } catch (_) {
-      // Error is already handled in the context
+      console.log(_)
     }
   }
 

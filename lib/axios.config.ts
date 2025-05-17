@@ -48,7 +48,7 @@ api.interceptors.request.use(
     }
 
     // Add authorization header if token exists
-    const token = localStorage.getItem('auth_token')
+    const token = localStorage.getItem('access_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -82,24 +82,28 @@ api.interceptors.response.use(
     }
 
     // Handle authentication errors
-    if (error.response?.status === 401) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
       // Redirect to login page or refresh token
       window.location.href = '/login'
       return Promise.reject(new Error('Authentication required. Please log in.'))
     }
 
     // Handle forbidden errors
-    if (error.response?.status === 403) {
+    if (axios.isAxiosError(error) && error.response?.status === 403) {
       return Promise.reject(new Error('You do not have permission to perform this action.'))
     }
 
-    // Handle not found errors
-    if (error.response?.status === 404) {
+    // Handle didn't found errors
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
       return Promise.reject(new Error('The requested resource was not found.'))
     }
 
     // Handle validation errors
-    if (error.response?.status === 422 && 'errors' in (error.response.data || {})) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 422 &&
+      'errors' in (error.response.data || {})
+    ) {
       const validationErrors = (error.response.data as ValidationErrorResponse).errors
         .map(err => `${err.field}: ${err.message}`)
         .join(', ')
@@ -107,7 +111,7 @@ api.interceptors.response.use(
     }
 
     // Handle server errors
-    if (error.response?.status && error.response.status >= 500) {
+    if (axios.isAxiosError(error) && error.response?.status && error.response.status >= 500) {
       return Promise.reject(new Error('Server error. Please try again later.'))
     }
 
@@ -128,7 +132,9 @@ api.interceptors.response.use(
 
     // Handle other errors
     return Promise.reject(
-      error.response?.data?.message ? new Error(error.response.data.message) : error
+      axios.isAxiosError(error) && error.response?.data && 'message' in error.response.data
+        ? new Error(error.response.data.message)
+        : error
     )
   }
 )
