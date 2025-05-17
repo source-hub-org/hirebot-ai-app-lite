@@ -75,8 +75,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
     try {
       // Use withLoading to show global loading state during login
+      // We need to wrap the entire login process, including the router.push call
+      // that happens inside the login function
       await withLoading(async () => {
         await login(credentials)
+        // The router.push happens inside the login function
+        // This ensures that the loading state is maintained until navigation completes
       })
     } catch (_) {
       console.log(_)
