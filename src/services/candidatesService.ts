@@ -73,8 +73,8 @@ export async function getCandidateById(id: string): Promise<Candidate> {
 
     const response = await api.get<ApiResponse<Candidate>>(`/api/proxy/candidates/${id}`, config)
     return handleSuccessResponse(response)
-  } catch (_) {
-    return handleErrorResponse(_)
+  } catch (error) {
+    return handleErrorResponse(error)
   }
 }
 
@@ -100,8 +100,8 @@ export async function createCandidate(
       config
     )
     return handleSuccessResponse(response)
-  } catch (_) {
-    return handleErrorResponse(_)
+  } catch (error) {
+    return handleErrorResponse(error)
   }
 }
 
@@ -129,8 +129,8 @@ export async function updateCandidate(
       config
     )
     return handleSuccessResponse(response)
-  } catch (_) {
-    return handleErrorResponse(_)
+  } catch (error) {
+    return handleErrorResponse(error)
   }
 }
 
@@ -153,8 +153,8 @@ export async function deleteCandidate(id: string): Promise<{ message: string }> 
       config
     )
     return handleSuccessResponse(response)
-  } catch (_) {
-    return handleErrorResponse(_)
+  } catch (error) {
+    return handleErrorResponse(error)
   }
 }
 

@@ -82,8 +82,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
         // The router.push happens inside the login function
         // This ensures that the loading state is maintained until navigation completes
       })
-    } catch (_) {
-      console.log(_)
+    } catch (error) {
+      console.log(error)
       // Error is handled by the useAuth hook
     }
   }

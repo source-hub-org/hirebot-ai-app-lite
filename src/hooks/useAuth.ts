@@ -20,8 +20,8 @@ export function useAuth() {
     try {
       await auth.login(credentials.email, credentials.password)
       router.push(redirectPath)
-    } catch (_) {
-      console.log(_)
+    } catch (error) {
+      console.log(error)
     }
   }
 
