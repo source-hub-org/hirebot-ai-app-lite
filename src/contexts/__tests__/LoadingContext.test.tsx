@@ -9,7 +9,7 @@ interface LoadingTimeRef {
 }
 
 interface TimeoutRef {
-  current: number | null
+  current: ReturnType<typeof setTimeout> | null
   callback?: () => void
 }
 
@@ -40,15 +40,21 @@ describe('LoadingContext', () => {
     // Create spies for setTimeout and clearTimeout
     clearTimeoutSpy = spyOn(global, 'clearTimeout')
     setTimeoutSpy = spyOn(global, 'setTimeout').mockImplementation(
-      (callback: TimerHandler): number => {
-        const timeoutId = Math.random()
+      (callback: TimerHandler): unknown => {
+        // Create a timeout-like object instead of just a number
+        const timeoutId = {
+          _id: Math.random(),
+          unref: () => {},
+          ref: () => {},
+        } as unknown as ReturnType<typeof setTimeout>
+
         hideTimeoutRef.current = timeoutId
         // Store the callback to be called manually in tests
         hideTimeoutRef.callback =
           typeof callback === 'function'
-            ? callback
+            ? (callback as () => void)
             : () => {
-                eval(callback)
+                eval(callback as string)
               }
         return timeoutId
       }
