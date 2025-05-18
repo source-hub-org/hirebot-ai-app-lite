@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { CandidateProvider } from '@/contexts/CandidateContext'
 import { LoadingProvider } from '@/contexts/LoadingContext'
-import authService from '../services/auth.service'
-import { UserProfile } from '../types/auth'
+import authService from '@/services/auth.service'
+import { UserProfile } from '@/types/auth'
 
 // Create a client
 const queryClient = new QueryClient({
@@ -47,7 +47,7 @@ const AuthContext = createContext<AuthContextType>({
 export const useAuthContext = () => useContext(AuthContext)
 
 /**
- * Authentication provider component
+ * Authentication provider component that also serves as the main app provider
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -121,31 +121,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initialize()
   }, [])
 
-  // Provide the auth context to children
-  return (
-    <AuthContext.Provider
-      value={{
-        isLoading,
-        isAuthenticated,
-        user,
-        error,
-        login,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  )
-}
-
-export function Providers({ children }: { children: React.ReactNode }) {
+  // Combined provider that wraps all app providers
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <AuthContext.Provider
+        value={{
+          isLoading,
+          isAuthenticated,
+          user,
+          error,
+          login,
+          logout,
+        }}
+      >
         <LoadingProvider>
           <CandidateProvider>{children}</CandidateProvider>
         </LoadingProvider>
-      </AuthProvider>
+      </AuthContext.Provider>
       {process.env.NODE_ENV !== 'production' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   )

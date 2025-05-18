@@ -20,11 +20,13 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
         <ReactMarkdown
           key={index}
           components={{
+            // @ts-expect-error - ReactMarkdown types are not fully compatible with Bun
             code({ inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
               return !inline && match ? (
                 <div className="text-xs">
                   <SyntaxHighlighter
+                    // @ts-expect-error - SyntaxHighlighter style prop has incompatible types with Bun
                     style={oneDark}
                     language={match[1]}
                     PreTag="div"

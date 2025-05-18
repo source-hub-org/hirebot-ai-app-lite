@@ -1,6 +1,6 @@
 // src/hooks/useAuth.ts
 import { useRouter } from 'next/navigation'
-import { useAuthContext } from '../providers/Providers'
+import { useAuthContext } from '../contexts/AuthProvider'
 import { LoginCredentials } from '../types/auth'
 
 /**

@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint --fix",
     "format": "prettier --write .",
-    "test": "bun jest",
-    "test:watch": "bun jest --watch"
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

@@ -1,12 +1,13 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { mock } from 'bun:test'
 
 // Mock the next/navigation functions
-jest.mock('next/navigation', () => ({
+mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
+    push: () => {},
+    replace: () => {},
+    prefetch: () => {},
   }),
   usePathname: () => '',
   useSearchParams: () => new URLSearchParams(),

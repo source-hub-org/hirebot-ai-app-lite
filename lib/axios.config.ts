@@ -69,9 +69,9 @@ api.interceptors.response.use(
 
     return response
   },
-  (error: AxiosError<ErrorResponse | ValidationErrorResponse>) => {
+  (error: AxiosError<ErrorResponse | ValidationErrorResponse> | Error | unknown) => {
     // Remove the request from pending requests
-    if (error.config) {
+    if (axios.isAxiosError(error) && error.config) {
       const requestKey = getRequestKey(error.config)
       pendingRequests.delete(requestKey)
     }
@@ -116,12 +116,12 @@ api.interceptors.response.use(
     }
 
     // Handle network errors
-    if (error.message === 'Network Error') {
+    if (axios.isAxiosError(error) && error.message === 'Network Error') {
       return Promise.reject(new Error('Network error. Please check your internet connection.'))
     }
 
     // Handle timeout errors
-    if (error.code === 'ECONNABORTED') {
+    if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
       return Promise.reject(new Error('Request timed out. Please try again.'))
     }
 

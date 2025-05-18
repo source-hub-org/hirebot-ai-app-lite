@@ -119,8 +119,8 @@ function QuestionList() {
         <>
           {/* Use VirtualizedList for better performance with long lists */}
           <div className="mb-6">
-            <VirtualizedList
-              items={questions}
+            <VirtualizedList<Question>
+              items={questions as Question[]}
               height={600} // Adjust height as needed
               itemHeight={200} // Approximate height of each question card
               renderItem={(question, idx) => (

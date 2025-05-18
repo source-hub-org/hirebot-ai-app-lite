@@ -1,12 +1,10 @@
 import { describe, test, expect, beforeEach, afterEach, spyOn } from 'bun:test'
-import { createContext, useContext, useState, useRef } from 'react'
 
 // Mock the MIN_LOADING_TIME constant
 const MIN_LOADING_TIME = 100
 
 // Create a simplified version of the LoadingContext for testing
 describe('LoadingContext', () => {
-  let loadingContext
   let showLoading
   let hideLoading
   let isLoading

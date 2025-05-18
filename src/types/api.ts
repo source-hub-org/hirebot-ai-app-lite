@@ -142,6 +142,17 @@ export interface Candidate {
 }
 
 /**
+ * Answer submission format
+ */
+export interface AnswerSubmission {
+  question_id: string
+  answer: number | null
+  other?: string
+  point?: number
+  is_skip?: number
+}
+
+/**
  * Submission entity
  */
 export interface Submission {
