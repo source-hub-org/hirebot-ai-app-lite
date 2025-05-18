@@ -1,5 +1,5 @@
 // src/services/authService.ts
-import api from '../../lib/axios.config'
+import api from '../libs/axiosConfig'
 import { AuthTokenResponse, LoginCredentials, UserProfile } from '@/types/auth'
 import { ApiResponse } from '@/types/api'
 import tokenStorage from '@/utils/tokenStorage'

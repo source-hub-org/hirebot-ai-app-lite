@@ -12,7 +12,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
   const { user, logout, isAuthenticated } = useAuthContext()
-
   return (
     <div className="w-full">
       {/* Top-bar */}
@@ -35,12 +34,14 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
             </Link>
           ) : (
             <>
-              <span className="text-base">{user?.username || 'Anonymous'}</span>
+              <span className="text-base">
+                {user?.username || user?.email?.split('@')[0] || 'Anonymous'}
+              </span>
               <button
                 onClick={() => {
                   if (confirm('Are you sure you want to logout?')) {
                     logout()
-                    window.location.href = '/login'
+                    // No need to manually redirect, the logout function will handle it
                   }
                 }}
                 className="hover:text-black text-base cursor-pointer"
@@ -54,7 +55,13 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
 
       {/* Hero Image with overlay content */}
       <div className="relative w-full h-[360px]">
-        <Image src="/cover.png" alt="Hero Cover" fill className="filter grayscale object-cover object-center" priority />
+        <Image
+          src="/cover.png"
+          alt="Hero Cover"
+          fill
+          className="filter grayscale object-cover object-center"
+          priority
+        />
         {/* Overlay layer */}
         <div className="absolute inset-0 bg-black opacity-60" />
 

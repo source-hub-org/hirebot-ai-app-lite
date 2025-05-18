@@ -1,5 +1,5 @@
 // src/services/candidatesService.ts
-import api from '../../lib/axios.config'
+import api from '../libs/axiosConfig'
 import { ApiResponse, PaginatedResponse, Candidate, CandidateQueryParams } from '@/types/api'
 import { buildQueryString } from '@/helpers/buildQueryString'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'

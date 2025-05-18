@@ -1,5 +1,5 @@
 // src/services/languagesService.ts
-import api from '../../lib/axios.config'
+import api from '../libs/axiosConfig'
 import { ApiResponse, Language, LanguageQueryParams, PaginatedResponse } from '@/types/api'
 import { buildQueryString } from '@/helpers/buildQueryString'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'

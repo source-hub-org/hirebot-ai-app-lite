@@ -1,5 +1,5 @@
 // src/services/positionsService.ts
-import api from '../../lib/axios.config'
+import api from '../libs/axiosConfig'
 import { ApiResponse, PaginatedResponse, Position, PositionQueryParams } from '@/types/api'
 import { buildQueryString } from '@/helpers/buildQueryString'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'

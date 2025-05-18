@@ -73,18 +73,22 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       return
     }
 
+    // Clear any previous errors
+    setErrors({})
+
     try {
       // Use withLoading to show global loading state during login
-      // We need to wrap the entire login process, including the router.push call
-      // that happens inside the login function
       await withLoading(async () => {
         await login(credentials)
-        // The router.push happens inside the login function
-        // This ensures that the loading state is maintained until navigation completes
+        // The router.replace happens inside the login function
       })
     } catch (error) {
-      console.log(error)
-      // Error is handled by the useAuth hook
+      console.error('Login form error:', error)
+      
+      // Set a general error message
+      setErrors({
+        general: error instanceof Error ? error.message : 'Login failed. Please try again.'
+      })
     }
   }
 

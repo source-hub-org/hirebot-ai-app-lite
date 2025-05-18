@@ -19,9 +19,11 @@ export function useAuth() {
   const login = async (credentials: LoginCredentials, redirectPath = '/dashboard') => {
     try {
       await auth.login(credentials.email, credentials.password)
-      router.push(redirectPath)
+      // Use replace instead of push to avoid adding to history
+      router.replace(redirectPath)
     } catch (error) {
-      console.log(error)
+      console.error('Login error:', error)
+      throw error; // Re-throw to allow form handling
     }
   }
 
@@ -32,7 +34,8 @@ export function useAuth() {
    */
   const logout = (redirectPath = '/login') => {
     auth.logout()
-    router.push(redirectPath)
+    // Use replace instead of push to avoid adding to history
+    router.replace(redirectPath)
   }
 
   return {

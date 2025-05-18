@@ -1,5 +1,5 @@
 // src/services/questionsService.ts
-import api from '../../lib/axios.config'
+import api from '../libs/axiosConfig'
 import { ApiResponse, PaginatedResponse, Question, QuestionSearchParams } from '@/types/api'
 import { buildQueryString } from '@/helpers/buildQueryString'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
