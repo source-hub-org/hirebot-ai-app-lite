@@ -12,8 +12,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="min-h-screen">
-      <LoadingComponent />
       <div className="site-container w-[1024px] mx-auto bg-white min-h-screen flex flex-col">
+        <LoadingComponent />
         <Header pageTitle={title} pageDescription={description} />
         <main className="flex-1">{children}</main>
         <Footer />

@@ -13,22 +13,12 @@ export default function LoadingComponent() {
   if (!isLoading) return null
 
   return (
-    <div
-      data-testid="loading-overlay"
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-      role="alert"
-      aria-live="assertive"
-      aria-busy="true"
-    >
-      <div
-        data-testid="loading-container"
-        className="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center"
-      >
-        <div
-          data-testid="loading-spinner"
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"
-        ></div>
-        <p className="text-gray-700">Loading...</p>
+    <div className="fixed inset-0 z-[999] bg-white opacity-75">
+      <div className="flex min-h-svh items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     </div>
   )
