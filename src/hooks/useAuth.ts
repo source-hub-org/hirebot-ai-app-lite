@@ -23,7 +23,7 @@ export function useAuth() {
       router.replace(redirectPath)
     } catch (error) {
       console.error('Login error:', error)
-      throw error; // Re-throw to allow form handling
+      throw error // Re-throw to allow form handling
     }
   }
 

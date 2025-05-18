@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/libs/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -84,10 +84,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       })
     } catch (error) {
       console.error('Login form error:', error)
-      
+
       // Set a general error message
       setErrors({
-        general: error instanceof Error ? error.message : 'Login failed. Please try again.'
+        general: error instanceof Error ? error.message : 'Login failed. Please try again.',
       })
     }
   }

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState, useEffect, useCallback } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/libs/utils'
 
 interface VirtualizedListProps<T> {
   items: T[]

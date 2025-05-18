@@ -11,11 +11,11 @@ import { ApiResponse, ErrorResponse, ValidationErrorResponse } from '@/types/api
  */
 export function handleSuccessResponse<T>(response: AxiosResponse<ApiResponse<T>>): T {
   const { status, message, data } = response.data
-  
+
   if (status === 'error') {
     throw new Error(`API error: ${message || 'Unknown error'}`)
   }
-  
+
   return data
 }
 

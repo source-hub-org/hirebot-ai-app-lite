@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [user, setUser] = useState<UserProfile | null>(null)
   const [error, setError] = useState<string | null>(null)
-  
+
   // Use refs to avoid dependencies in useEffect
   const isAuthenticatedRef = React.useRef(isAuthenticated)
 

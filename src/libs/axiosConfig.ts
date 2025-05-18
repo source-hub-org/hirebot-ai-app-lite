@@ -11,7 +11,7 @@ import tokenStorage from '@/utils/tokenStorage'
 // Extend AxiosRequestConfig to include _retry property
 declare module 'axios' {
   export interface AxiosRequestConfig {
-    _retry?: boolean;
+    _retry?: boolean
   }
 }
 
@@ -69,21 +69,21 @@ api.interceptors.request.use(
 )
 
 // Track if we're currently refreshing the token
-let isRefreshing = false;
-let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: any) => void }[] = [];
+let isRefreshing = false
+let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: any) => void }[] = []
 
 // Process the failed queue
 const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue.forEach(promise => {
     if (error) {
-      promise.reject(error);
+      promise.reject(error)
     } else {
-      promise.resolve(token);
+      promise.resolve(token)
     }
-  });
-  
-  failedQueue = [];
-};
+  })
+
+  failedQueue = []
+}
 
 // Response interceptor
 api.interceptors.response.use(
@@ -108,89 +108,89 @@ api.interceptors.response.use(
 
     // Handle authentication errors
     if (axios.isAxiosError(error) && error.response?.status === 401 && error.config) {
-      const originalRequest = error.config;
-      
+      const originalRequest = error.config
+
       // Prevent infinite loops - don't retry already retried requests
       if (originalRequest._retry) {
         // Clear tokens and redirect to login
-        tokenStorage.clearTokens();
-        
+        tokenStorage.clearTokens()
+
         // Use setTimeout to avoid immediate redirect during request handling
         setTimeout(() => {
-          window.location.href = '/login';
-        }, 100);
-        
-        return Promise.reject(new Error('Authentication failed. Please log in again.'));
+          window.location.href = '/login'
+        }, 100)
+
+        return Promise.reject(new Error('Authentication failed. Please log in again.'))
       }
-      
+
       // Check if we have a refresh token
-      const refreshToken = tokenStorage.getRefreshToken();
+      const refreshToken = tokenStorage.getRefreshToken()
       if (!refreshToken) {
         // No refresh token, redirect to login
         setTimeout(() => {
-          window.location.href = '/login';
-        }, 100);
-        
-        return Promise.reject(new Error('Authentication required. Please log in.'));
+          window.location.href = '/login'
+        }, 100)
+
+        return Promise.reject(new Error('Authentication required. Please log in.'))
       }
-      
+
       // Mark this request as retried
-      originalRequest._retry = true;
-      
+      originalRequest._retry = true
+
       // If we're already refreshing, add this request to the queue
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
+          failedQueue.push({ resolve, reject })
         })
           .then(token => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return axios(originalRequest);
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            return axios(originalRequest)
           })
           .catch(err => {
-            return Promise.reject(err);
-          });
+            return Promise.reject(err)
+          })
       }
-      
-      isRefreshing = true;
-      
+
+      isRefreshing = true
+
       try {
         // Import authService dynamically to avoid circular dependencies
-        const authServiceModule = await import('@/services/authService');
-        const authService = authServiceModule.default;
-        
+        const authServiceModule = await import('@/services/authService')
+        const authService = authServiceModule.default
+
         // Try to refresh the token
-        const tokenResponse = await authService.refreshToken();
-        const newToken = tokenResponse.access_token;
-        
+        const tokenResponse = await authService.refreshToken()
+        const newToken = tokenResponse.access_token
+
         // Update the Authorization header with the new token
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+
         // Process the queue with the new token
-        processQueue(null, newToken);
-        
+        processQueue(null, newToken)
+
         // Reset refreshing state
-        isRefreshing = false;
-        
+        isRefreshing = false
+
         // Retry the original request
-        return axios(originalRequest);
+        return axios(originalRequest)
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-        
+        console.error('Token refresh failed:', refreshError)
+
         // Process the queue with the error
-        processQueue(new Error('Token refresh failed'));
-        
+        processQueue(new Error('Token refresh failed'))
+
         // Clear tokens and redirect to login
-        tokenStorage.clearTokens();
-        
+        tokenStorage.clearTokens()
+
         // Use setTimeout to avoid immediate redirect during request handling
         setTimeout(() => {
-          window.location.href = '/login';
-        }, 100);
-        
+          window.location.href = '/login'
+        }, 100)
+
         // Reset refreshing state
-        isRefreshing = false;
-        
-        return Promise.reject(new Error('Authentication failed. Please log in again.'));
+        isRefreshing = false
+
+        return Promise.reject(new Error('Authentication failed. Please log in again.'))
       }
     }
 
@@ -208,7 +208,7 @@ api.interceptors.response.use(
     if (
       axios.isAxiosError(error) &&
       error.response?.status === 422 &&
-      error.response.data && 
+      error.response.data &&
       typeof error.response.data === 'object' &&
       'errors' in error.response.data
     ) {
@@ -239,11 +239,15 @@ api.interceptors.response.use(
     }
 
     // Handle other errors
-    if (axios.isAxiosError(error) && error.response?.data && 
-        typeof error.response.data === 'object' && 'message' in error.response.data) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.data &&
+      typeof error.response.data === 'object' &&
+      'message' in error.response.data
+    ) {
       return Promise.reject(new Error(error.response.data.message as string))
     }
-    
+
     return Promise.reject(error)
   }
 )
