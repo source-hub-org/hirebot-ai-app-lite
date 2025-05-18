@@ -3,21 +3,35 @@ import { describe, test, expect, beforeEach, afterEach, spyOn } from 'bun:test'
 // Mock the MIN_LOADING_TIME constant
 const MIN_LOADING_TIME = 100
 
+// Define TypeScript interfaces for our test objects
+interface LoadingTimeRef {
+  current: number
+}
+
+interface TimeoutRef {
+  current: number | null
+  callback?: () => void
+}
+
+// No need for TimeoutId type as it's not used
+
+type SetIsLoadingFunction = (value: boolean) => void
+
 // Create a simplified version of the LoadingContext for testing
 describe('LoadingContext', () => {
-  let showLoading
-  let hideLoading
-  let isLoading
-  let setIsLoading
-  let loadingStartTime
-  let hideTimeoutRef
-  let clearTimeoutSpy
-  let setTimeoutSpy
+  let showLoading: () => void
+  let hideLoading: () => void
+  let isLoading: boolean
+  let setIsLoading: SetIsLoadingFunction
+  let loadingStartTime: LoadingTimeRef
+  let hideTimeoutRef: TimeoutRef
+  let clearTimeoutSpy: ReturnType<typeof spyOn>
+  let setTimeoutSpy: ReturnType<typeof spyOn>
 
   beforeEach(() => {
     // Reset state before each test
     isLoading = false
-    setIsLoading = value => {
+    setIsLoading = (value: boolean): void => {
       isLoading = value
     }
     loadingStartTime = { current: 0 }
@@ -25,16 +39,23 @@ describe('LoadingContext', () => {
 
     // Create spies for setTimeout and clearTimeout
     clearTimeoutSpy = spyOn(global, 'clearTimeout')
-    setTimeoutSpy = spyOn(global, 'setTimeout').mockImplementation(callback => {
-      const timeoutId = Math.random()
-      hideTimeoutRef.current = timeoutId
-      // Store the callback to be called manually in tests
-      hideTimeoutRef.callback = callback
-      return timeoutId
-    })
+    setTimeoutSpy = spyOn(global, 'setTimeout').mockImplementation(
+      (callback: TimerHandler): number => {
+        const timeoutId = Math.random()
+        hideTimeoutRef.current = timeoutId
+        // Store the callback to be called manually in tests
+        hideTimeoutRef.callback =
+          typeof callback === 'function'
+            ? callback
+            : () => {
+                eval(callback)
+              }
+        return timeoutId
+      }
+    )
 
     // Create the showLoading and hideLoading functions
-    showLoading = () => {
+    showLoading = (): void => {
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current)
         hideTimeoutRef.current = null
@@ -43,7 +64,7 @@ describe('LoadingContext', () => {
       setIsLoading(true)
     }
 
-    hideLoading = () => {
+    hideLoading = (): void => {
       const currentTime = Date.now()
       const elapsedTime = currentTime - loadingStartTime.current
 
@@ -98,7 +119,9 @@ describe('LoadingContext', () => {
     expect(setTimeoutSpy).toHaveBeenCalled()
 
     // Simulate the timeout callback being triggered
-    hideTimeoutRef.callback()
+    if (hideTimeoutRef.callback) {
+      hideTimeoutRef.callback()
+    }
 
     // Now it should not be loading
     expect(isLoading).toBe(false)
