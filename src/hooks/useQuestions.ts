@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { searchQuestions, submitAnswers } from '@/services/questions.service'
+import { searchQuestions, submitAnswers } from '@/services/questionsService'
 import { AnswerSubmission } from '@/types/api'
 
 interface QuestionSearchParams {

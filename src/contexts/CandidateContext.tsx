@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { Candidate } from '@/types/api'
 import { useQuery } from '@tanstack/react-query'
-import candidateService from '@/services/candidates.service'
+import candidateService from '@/services/candidatesService'
 
 interface CandidateContextType {
   candidateId: string

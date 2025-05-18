@@ -1,6 +1,6 @@
 // src/helpers/handleApiResponse.ts
 import { AxiosError, AxiosResponse } from 'axios'
-import { ApiResponse, ErrorResponse, ValidationErrorResponse } from '../types/api'
+import { ApiResponse, ErrorResponse, ValidationErrorResponse } from '@/types/api'
 
 /**
  * Handles successful API responses

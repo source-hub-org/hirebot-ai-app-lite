@@ -1,9 +1,9 @@
-// src/services/auth.service.ts
+// src/services/authService.ts
 import api from '../../lib/axios.config'
-import { AuthTokenResponse, LoginCredentials, UserProfile } from '../types/auth'
-import { ApiResponse } from '../types/api'
-import tokenStorage from '../utils/tokenStorage'
-import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApiResponse'
+import { AuthTokenResponse, LoginCredentials, UserProfile } from '@/types/auth'
+import { ApiResponse } from '@/types/api'
+import tokenStorage from '@/utils/tokenStorage'
+import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
  * Retrieves environment variables for authentication

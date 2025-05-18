@@ -1,8 +1,8 @@
-// src/services/candidates.service.ts
+// src/services/candidatesService.ts
 import api from '../../lib/axios.config'
-import { ApiResponse, PaginatedResponse, Candidate, CandidateQueryParams } from '../types/api'
-import { buildQueryString } from '../helpers/buildQueryString'
-import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApiResponse'
+import { ApiResponse, PaginatedResponse, Candidate, CandidateQueryParams } from '@/types/api'
+import { buildQueryString } from '@/helpers/buildQueryString'
+import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
  * Fetches a list of candidates with optional filtering, pagination, and sorting
@@ -73,8 +73,8 @@ export async function getCandidateById(id: string): Promise<Candidate> {
 
     const response = await api.get<ApiResponse<Candidate>>(`/api/proxy/candidates/${id}`, config)
     return handleSuccessResponse(response)
-  } catch (error) {
-    return handleErrorResponse(error)
+  } catch (_) {
+    return handleErrorResponse(_)
   }
 }
 
@@ -100,8 +100,8 @@ export async function createCandidate(
       config
     )
     return handleSuccessResponse(response)
-  } catch (error) {
-    return handleErrorResponse(error)
+  } catch (_) {
+    return handleErrorResponse(_)
   }
 }
 
@@ -129,8 +129,8 @@ export async function updateCandidate(
       config
     )
     return handleSuccessResponse(response)
-  } catch (error) {
-    return handleErrorResponse(error)
+  } catch (_) {
+    return handleErrorResponse(_)
   }
 }
 
@@ -153,8 +153,8 @@ export async function deleteCandidate(id: string): Promise<{ message: string }> 
       config
     )
     return handleSuccessResponse(response)
-  } catch (error) {
-    return handleErrorResponse(error)
+  } catch (_) {
+    return handleErrorResponse(_)
   }
 }
 

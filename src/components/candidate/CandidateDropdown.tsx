@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Candidate } from '@/types/api'
-import candidateService from '@/services/candidates.service'
+import candidateService from '@/services/candidatesService'
 import { useCandidateContext } from '@/contexts/CandidateContext'
 
 interface CandidateDropdownProps {

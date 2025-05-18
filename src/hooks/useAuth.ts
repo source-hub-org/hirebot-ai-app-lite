@@ -1,7 +1,7 @@
 // src/hooks/useAuth.ts
 import { useRouter } from 'next/navigation'
-import { useAuthContext } from '../contexts/AuthProvider'
-import { LoginCredentials } from '../types/auth'
+import { useAuthContext } from '@/contexts/AuthProvider'
+import { LoginCredentials } from '@/types/auth'
 
 /**
  * Custom hook for authentication functionality with navigation

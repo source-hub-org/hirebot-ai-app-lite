@@ -1,7 +1,7 @@
 // src/hooks/useCandidates.ts
 import { useState, useEffect, useCallback } from 'react'
-import { Candidate, CandidateQueryParams } from '../types/api'
-import candidateService from '../services/candidates.service'
+import { Candidate, CandidateQueryParams } from '@/types/api'
+import candidateService from '@/services/candidatesService'
 
 interface UseCandidatesResult {
   candidates: Candidate[]

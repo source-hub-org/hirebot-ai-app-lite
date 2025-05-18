@@ -1,8 +1,8 @@
-// src/services/languages.service.ts
+// src/services/languagesService.ts
 import api from '../../lib/axios.config'
-import { ApiResponse, Language, LanguageQueryParams, PaginatedResponse } from '../types/api'
-import { buildQueryString } from '../helpers/buildQueryString'
-import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApiResponse'
+import { ApiResponse, Language, LanguageQueryParams, PaginatedResponse } from '@/types/api'
+import { buildQueryString } from '@/helpers/buildQueryString'
+import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
  * Fetches a list of languages with optional filtering and pagination

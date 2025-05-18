@@ -1,7 +1,7 @@
-// src/services/topics.service.ts
+// src/services/topicsService.ts
 import api from '../../lib/axios.config'
-import { ApiResponse, Topic } from '../types/api'
-import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApiResponse'
+import { ApiResponse, Topic } from '@/types/api'
+import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
  * Fetches all available topics

@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { CandidateProvider } from '@/contexts/CandidateContext'
 import { LoadingProvider } from '@/contexts/LoadingContext'
-import authService from '@/services/auth.service'
+import authService from '@/services/authService'
 import { UserProfile } from '@/types/auth'
 
 // Create a client
