@@ -1,5 +1,7 @@
 // src/types/auth.ts
 
+import { Candidate } from '@/types/api'
+
 /**
  * Authentication credentials for login
  */
@@ -26,6 +28,9 @@ export interface UserProfile {
   email: string
   username: string
   candidate_id?: string
+  candidate?: Candidate
+  createdAt?: string
+  updatedAt?: string
 }
 
 /**
