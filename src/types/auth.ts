@@ -24,8 +24,8 @@ export interface AuthTokenResponse {
 export interface UserProfile {
   id: string
   email: string
-  name: string
-  role: string
+  username: string
+  candidate_id?: string
 }
 
 /**
