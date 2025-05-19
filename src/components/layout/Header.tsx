@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
           ) : (
             <>
               <span className="text-base">
-                Look who's here – {user?.username || user?.email?.split('@')[0] || 'Anonymous'} in
+                Look who&apos;s here – <i>{user?.username || user?.email?.split('@')[0] || 'Anonymous'}</i> in
                 the house!
               </span>
               <Button

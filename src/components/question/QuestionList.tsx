@@ -156,7 +156,7 @@ function QuestionList() {
           </div>
         </>
       ) : (
-        <div className="text-center text-gray-500">
+        <div className="text-center text-gray-500 mt-20">
           No questions available. Use the + button to add questions.
         </div>
       )}
