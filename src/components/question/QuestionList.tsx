@@ -3,12 +3,11 @@
 
 import { useEffect, useState, memo, useCallback } from 'react'
 import QuestionCard from '@/components/question/QuestionCard'
-import { AnswerSubmission, Question } from '@/types/api'
+import { AnswerSubmission } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { useCandidateContext } from '@/contexts/CandidateContext'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useLoading } from '@/hooks/useLoading'
-import { VirtualizedList } from '@/components/ui/virtualized-list'
 
 interface Submission {
   candidate_id: string
@@ -36,7 +35,7 @@ function QuestionList() {
   useEffect(() => {
     if (questions && questions.length > 0) {
       // Create initial answers for all questions
-      const initialAnswers = questions.map((q: Question) => ({
+      const initialAnswers = questions.map((q) => ({
         question_id: q._id || '',
         answer: null,
         other: '',
@@ -50,7 +49,7 @@ function QuestionList() {
         answers: initialAnswers,
       })
     }
-  }, [questions.length]) // Only run when the number of questions changes
+  }, [questions?.length]) // Only run when the number of questions changes
 
   // Handle answer changes from individual question cards - memoized to prevent unnecessary re-renders
   const handleAnswerChange = useCallback((questionSubmission: AnswerSubmission) => {
@@ -122,18 +121,13 @@ function QuestionList() {
     <section className="p-4 space-y-4">
       {questions.length > 0 ? (
         <>
-          {/* Use VirtualizedList for better performance with long lists */}
-          <div className="mb-6">
-            <VirtualizedList<Question>
-              items={questions as Question[]}
-              height={600} // Adjust height as needed
-              itemHeight={200} // Approximate height of each question card
-              renderItem={(question, idx) => (
-                <div className="py-2" key={question._id || idx}>
-                  <QuestionCard question={question} onAnswerChange={handleAnswerChange} />
-                </div>
-              )}
-            />
+          {/* Render all questions directly */}
+          <div className="mb-6 space-y-4">
+            {questions.map((question, idx) => (
+              <div className="py-2" key={question._id || idx}>
+                <QuestionCard question={question} onAnswerChange={handleAnswerChange} />
+              </div>
+            ))}
           </div>
 
           <div className="mt-6 flex flex-col items-center">

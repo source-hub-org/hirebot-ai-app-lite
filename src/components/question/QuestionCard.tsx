@@ -23,7 +23,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
   const [showExplanation, setShowExplanation] = useState(false)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [otherAnswer, setOtherAnswer] = useState('')
-  const [_, setSubmission] = useState<AnswerSubmission>({
+  const [, setSubmission] = useState<AnswerSubmission>({
     question_id: question._id || '',
     answer: null,
     other: '',

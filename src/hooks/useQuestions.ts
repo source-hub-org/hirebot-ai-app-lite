@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { searchQuestions, submitAnswers } from '@/services/questionsService'
-import { AnswerSubmission, QuestionSearchParams } from '@/types/api'
+import { AnswerSubmission, Question, QuestionSearchParams } from '@/types/api'
 
 interface SubmissionData {
   candidate_id: string
@@ -12,7 +12,7 @@ export function useQuestions() {
 
   // Query for fetching questions
   const {
-    data: questions = [],
+    data: questions = [] as Question[],
     isLoading,
     error,
     refetch,
@@ -20,7 +20,7 @@ export function useQuestions() {
     queryKey: ['questions'],
     queryFn: async () => {
       // This will be empty initially and populated by the searchQuestions mutation
-      return []
+      return [] as Question[]
     },
     enabled: false, // Don't run this query automatically
   })
