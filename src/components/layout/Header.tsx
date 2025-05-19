@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
           src="/cover.png"
           alt="Hero Cover"
           fill
-          className="filter grayscale object-cover object-center"
+          className="object-cover object-center"
           priority
         />
         {/* Overlay layer */}
