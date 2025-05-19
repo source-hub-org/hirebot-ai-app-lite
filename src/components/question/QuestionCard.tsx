@@ -23,7 +23,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
   const [showExplanation, setShowExplanation] = useState(false)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [otherAnswer, setOtherAnswer] = useState('')
-  const [submission, setSubmission] = useState<AnswerSubmission>({
+  const [_, setSubmission] = useState<AnswerSubmission>({
     question_id: question._id || '',
     answer: null,
     other: '',
@@ -34,9 +34,10 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
   // Update submission when user interacts with the question
   useEffect(() => {
     const newSubmission = {
-      ...submission,
+      question_id: question._id || '',
       answer: selectedOption,
       other: otherAnswer,
+      point: 0,
       is_skip: showExplanation ? 1 : 0,
     }
 
@@ -46,7 +47,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
     if (onAnswerChange) {
       onAnswerChange(newSubmission)
     }
-  }, [selectedOption, otherAnswer, showExplanation, onAnswerChange, submission])
+  }, [selectedOption, otherAnswer, showExplanation, question._id, onAnswerChange])
 
   // Handle option selection
   const handleOptionSelect = (index: number) => {

@@ -1,13 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { searchQuestions, submitAnswers } from '@/services/questionsService'
-import { AnswerSubmission } from '@/types/api'
-
-interface QuestionSearchParams {
-  topic?: string
-  language?: string
-  position?: string
-  page_size?: number
-}
+import { AnswerSubmission, QuestionSearchParams } from '@/types/api'
 
 interface SubmissionData {
   candidate_id: string

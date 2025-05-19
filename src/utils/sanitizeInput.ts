@@ -12,12 +12,12 @@ export function sanitizeInput<T>(input: T): T {
 
   // If input is a string, sanitize it
   if (typeof input === 'string') {
-    return sanitizeString(input)
+    return sanitizeString(input) as unknown as T
   }
 
   // If input is an array, sanitize each element
   if (Array.isArray(input)) {
-    return input.map(item => sanitizeInput(item))
+    return input.map(item => sanitizeInput(item)) as unknown as T
   }
 
   // If input is an object, sanitize each property
@@ -28,7 +28,7 @@ export function sanitizeInput<T>(input: T): T {
         sanitizedObject[key] = sanitizeInput(input[key])
       }
     }
-    return sanitizedObject
+    return sanitizedObject as unknown as T
   }
 
   // For other types (number, boolean, etc.), return as is

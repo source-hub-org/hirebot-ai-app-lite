@@ -66,11 +66,11 @@ export default function AddQuestionPopover() {
   // Fetch data when the popover opens
   useEffect(() => {
     if (open) {
-      fetchData()
+      fetchData().then(() => console.log('fetchData called'))
     }
   }, [open])
 
-  // Use the questions hook for state management
+  // Use the question hook for state management
   const { searchQuestions, isSearching, searchError } = useQuestions()
 
   const handleAddQuestions = useCallback(async () => {

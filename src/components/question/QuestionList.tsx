@@ -1,7 +1,7 @@
 // src/components/question/QuestionList.tsx
 'use client'
 
-import { useEffect, useState, memo } from 'react'
+import { useEffect, useState, memo, useCallback } from 'react'
 import QuestionCard from '@/components/question/QuestionCard'
 import { AnswerSubmission, Question } from '@/types/api'
 import { Button } from '@/components/ui/button'
@@ -19,11 +19,11 @@ function QuestionList() {
   // Get candidate_id from context
   const { candidateId } = useCandidateContext()
 
-  // Use the questions hook for state management
+  // Use the question hook for state management
   const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
     useQuestions()
 
-  // Use the loading hook for global loading state
+  // Use the loading hook for a global loading state
   const { withLoading } = useLoading()
 
   // State to store all submissions
@@ -32,9 +32,10 @@ function QuestionList() {
     answers: [],
   })
 
-  // Initialize empty answers when questions change
+  // Initialize empty answers when questions change - only on the initial load or when questions array length changes
   useEffect(() => {
     if (questions && questions.length > 0) {
+      // Create initial answers for all questions
       const initialAnswers = questions.map((q: Question) => ({
         question_id: q._id || '',
         answer: null,
@@ -43,15 +44,16 @@ function QuestionList() {
         is_skip: 0,
       }))
 
-      setSubmission(prev => ({
-        ...prev,
+      // Set the initial answers without referencing previous state
+      setSubmission({
+        candidate_id: '',
         answers: initialAnswers,
-      }))
+      })
     }
-  }, [questions])
+  }, [questions.length]) // Only run when the number of questions changes
 
-  // Handle answer changes from individual question cards
-  const handleAnswerChange = (questionSubmission: AnswerSubmission) => {
+  // Handle answer changes from individual question cards - memoized to prevent unnecessary re-renders
+  const handleAnswerChange = useCallback((questionSubmission: AnswerSubmission) => {
     setSubmission(prev => {
       // Find if this question already has an answer
       const existingAnswerIndex = prev.answers.findIndex(
@@ -74,10 +76,10 @@ function QuestionList() {
         answers: newAnswers,
       }
     })
-  }
+  }, []) // Empty dependency array since this function doesn't depend on any props or state
 
   // Handle submission of all answers
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     // Create a copy of the submission with the candidate_id from context
     const submissionData = {
       ...submission,
@@ -89,12 +91,13 @@ function QuestionList() {
       console.warn('No candidate selected. Using demo ID as fallback.')
     }
 
-    // Use withLoading to show global loading state during submission
+    // Use withLoading to show a global loading state during submission
     await withLoading(async () => {
-      await submitAnswers(submissionData)
+      submitAnswers(submissionData)
     })
-  }
+  }, [candidateId, submission, submitAnswers, withLoading])
 
+  // Loading state
   if (isLoading) {
     return (
       <section className="p-4">
@@ -103,6 +106,7 @@ function QuestionList() {
     )
   }
 
+  // Error state
   if (error) {
     return (
       <section className="p-4">
@@ -113,6 +117,7 @@ function QuestionList() {
     )
   }
 
+  // Render the question list
   return (
     <section className="p-4 space-y-4">
       {questions.length > 0 ? (
@@ -124,12 +129,8 @@ function QuestionList() {
               height={600} // Adjust height as needed
               itemHeight={200} // Approximate height of each question card
               renderItem={(question, idx) => (
-                <div className="py-2">
-                  <QuestionCard
-                    key={question._id || idx}
-                    question={question}
-                    onAnswerChange={handleAnswerChange}
-                  />
+                <div className="py-2" key={question._id || idx}>
+                  <QuestionCard question={question} onAnswerChange={handleAnswerChange} />
                 </div>
               )}
             />

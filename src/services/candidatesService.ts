@@ -38,8 +38,8 @@ export async function getCandidates(params: CandidateQueryParams = {}): Promise<
       pagination: {
         total: response.data.pagination.total,
         page: response.data.pagination.page,
-        page_size: response.data.pagination.pageSize,
-        total_pages: response.data.pagination.totalPages,
+        page_size: response.data.pagination.page_size,
+        total_pages: response.data.pagination.total_pages,
       },
     }
   } catch (error) {
