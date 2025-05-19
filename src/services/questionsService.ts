@@ -15,8 +15,8 @@ export async function searchQuestions(params: QuestionSearchParams = {}): Promis
   pagination: {
     total: number
     page: number
-    pageSize: number
-    totalPages: number
+    page_size: number
+    total_pages: number
   }
 }> {
   try {

@@ -15,8 +15,8 @@ export interface ApiResponse<T> {
 export interface Pagination {
   total: number
   page: number
-  pageSize: number
-  totalPages: number
+  page_size: number
+  total_pages: number
 }
 
 /**
@@ -147,9 +147,9 @@ export interface Candidate {
 export interface AnswerSubmission {
   question_id: string
   answer: number | null
-  other?: string
-  point?: number
-  is_skip?: number
+  other: string
+  point: number
+  is_skip: number
 }
 
 /**
@@ -179,7 +179,8 @@ export interface PositionQueryParams {
   page?: number
   limit?: number
   sort_by?: string
-  sort_direction?: 'asc' | 'desc'
+  sort_direction?: string
+  [key: string]: string | number | boolean | string[] | number[] | undefined
 }
 
 /**
@@ -189,12 +190,13 @@ export interface QuestionSearchParams {
   topic?: string
   language?: string
   position?: string
-  sort_by?: 'question' | 'category' | 'createdAt' | 'random'
-  sort_direction?: 'asc' | 'desc'
+  sort_by?: string
+  sort_direction?: string
   page?: number
   page_size?: number
-  mode?: 'compact' | 'full' | 'minimalist'
+  mode?: string
   ignore_question_ids?: string
+  [key: string]: string | number | boolean | string[] | number[] | undefined
 }
 
 /**
@@ -211,7 +213,8 @@ export interface LanguageQueryParams {
   page?: number
   limit?: number
   sort_by?: string
-  sort_direction?: 'asc' | 'desc'
+  sort_direction?: string
+  [key: string]: string | number | boolean | string[] | number[] | undefined
 }
 
 /**
@@ -221,7 +224,7 @@ export interface CandidateQueryParams {
   name?: string
   email?: string
   status?: string
-  interview_level?: 'intern' | 'fresher' | 'junior' | 'middle' | 'senior' | 'lead'
+  interview_level?: string
   skills?: string | string[]
   programming_languages?: string | string[]
   preferred_stack?: string
@@ -230,6 +233,7 @@ export interface CandidateQueryParams {
   location?: string
   page?: number
   page_size?: number
-  sort_by?: 'full_name' | 'email' | 'createdAt' | 'updatedAt' | 'interview_level'
-  sort_direction?: 'asc' | 'desc'
+  sort_by?: string
+  sort_direction?: string
+  [key: string]: string | number | boolean | string[] | number[] | undefined
 }

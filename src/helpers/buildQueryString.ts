@@ -7,7 +7,7 @@
  * @returns Formatted query string starting with '?' or empty string if no params
  */
 export function buildQueryString(
-  params: Record<string, string | number | boolean | string[] | number[]>
+  params: Record<string, string | number | boolean | string[] | number[] | undefined | null>
 ): string {
   // Filter out undefined, null, and empty string values
   const filteredParams = Object.entries(params).filter(

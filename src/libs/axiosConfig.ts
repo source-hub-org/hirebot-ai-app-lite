@@ -70,7 +70,7 @@ api.interceptors.request.use(
 
 // Track if we're currently refreshing the token
 let isRefreshing = false
-let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: any) => void }[] = []
+let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: unknown) => void }[] = []
 
 // Process the failed queue
 const processQueue = (error: Error | null, token: string | null = null) => {

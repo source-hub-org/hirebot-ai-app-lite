@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // If trying to access login page with a token, redirect to dashboard
+  // If trying to access the login page with a token, redirect to the dashboard
   if (token && isLoginPage) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
@@ -21,9 +21,20 @@ export function middleware(request: NextRequest) {
 
 // Define which routes should be public (accessible without authentication)
 function isPublicRoute(pathname: string): boolean {
-  const publicRoutes = ['/login', '/about', '/contact', '/', '/api/', '/_next', '/favicon.ico']
-
-  return publicRoutes.some(route => pathname.startsWith(route))
+  // Exact matches for root and simple routes
+  const exactPublicRoutes = ['/login', '/about', '/contact', '/'];
+  if (exactPublicRoutes.includes(pathname)) {
+    return true;
+  }
+  
+  // Prefix matches for API routes, Next.js routes, and static files
+  const prefixPublicRoutes = ['/api/', '/_next/', '/favicon.ico'];
+  if (prefixPublicRoutes.some(route => pathname.startsWith(route))) {
+    return true;
+  }
+  
+  // All other routes (including /submissions/new) require authentication
+  return false;
 }
 
 // See "Matching Paths" below to learn more

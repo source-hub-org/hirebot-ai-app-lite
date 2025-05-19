@@ -16,12 +16,10 @@ import { getTopics } from '@/services/topicsService'
 import { getLanguages } from '@/services/languagesService'
 import { getPositions } from '@/services/positionsService'
 import { Topic, Language, Position } from '@/types/api'
-import { useCandidateContext } from '@/contexts/CandidateContext'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useLoading } from '@/hooks/useLoading'
 
 export default function AddQuestionPopover() {
-  const { candidateId } = useCandidateContext()
   const { withLoading } = useLoading()
   const [open, setOpen] = useState(false)
   const [topics, setTopics] = useState<Topic[]>([])
@@ -66,11 +64,11 @@ export default function AddQuestionPopover() {
   // Fetch data when the popover opens
   useEffect(() => {
     if (open) {
-      fetchData()
+      fetchData().then(() => console.log('fetchData called'))
     }
   }, [open])
 
-  // Use the questions hook for state management
+  // Use the question hook for state management
   const { searchQuestions, isSearching, searchError } = useQuestions()
 
   const handleAddQuestions = useCallback(async () => {
@@ -88,9 +86,9 @@ export default function AddQuestionPopover() {
       page_size: parseInt(pageSize),
     }
 
-    // Call the searchQuestions mutation with loading indicator
+    // Call the searchQuestions mutation with the loading indicator
     await withLoading(async () => {
-      await searchQuestions(formData)
+      searchQuestions(formData)
 
       // Close the popover only if there's no error
       if (!searchError) {
@@ -125,20 +123,16 @@ export default function AddQuestionPopover() {
     setOpen(false)
   }, [])
 
-  if (!candidateId) {
-    return null
-  }
-
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button className="fixed bottom-5 right-25 rounded cursor-pointer" variant="default">
+        <Button className="fixed top-5 right-5 rounded cursor-pointer" variant="default">
           <Plus className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-[400px] space-y-4 mr-[20px] mb-[15px]"
+        className="w-[400px] space-y-4 mr-[15px] mt-[5px]"
         sideOffset={5}
         onClick={handlePopoverClick}
       >
@@ -266,7 +260,7 @@ export default function AddQuestionPopover() {
           </Button>
         </div>
 
-        {/* Show error message if search fails */}
+        {/* Show an error message if the search fails */}
         {searchError && (
           <div className="mt-2 p-2 text-sm text-red-600 bg-red-50 rounded border border-red-200">
             Error: {(searchError as Error).message}

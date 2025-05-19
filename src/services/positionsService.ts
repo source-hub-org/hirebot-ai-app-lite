@@ -15,7 +15,8 @@ export async function getPositions(params: PositionQueryParams = {}): Promise<{
   pagination: {
     total: number
     page: number
-    limit: number
+    page_size: number
+    total_pages: number
   }
 }> {
   try {

@@ -15,8 +15,8 @@ export async function getLanguages(params: LanguageQueryParams = {}): Promise<{
   pagination: {
     total: number
     page: number
-    limit: number
-    totalPages: number
+    page_size: number
+    total_pages: number
   }
 }> {
   try {

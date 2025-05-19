@@ -109,7 +109,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
         </p>
       </div>
 
-      {/* Show general error message */}
+      {/* Show a general error message */}
       {(error || errors.general) && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-500">
           {error || errors.general}

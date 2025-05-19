@@ -35,7 +35,7 @@ export default function LoginPage() {
           src="/login-bg.png"
           alt="Background image"
           fill
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="filter grayscale brightness-[0.75] absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
           priority
         />
       </div>
