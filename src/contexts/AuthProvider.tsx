@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { CandidateProvider } from '@/contexts/CandidateContext'
 import { LoadingProvider } from '@/contexts/LoadingContext'
 import authService from '@/services/authService'
 import { UserProfile } from '@/types/auth'
@@ -194,9 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           logout,
         }}
       >
-        <LoadingProvider>
-          <CandidateProvider>{children}</CandidateProvider>
-        </LoadingProvider>
+        <LoadingProvider>{children}</LoadingProvider>
       </AuthContext.Provider>
       {process.env.NODE_ENV !== 'production' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>

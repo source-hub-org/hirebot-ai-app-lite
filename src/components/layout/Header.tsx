@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuthContext } from '@/contexts/AuthProvider'
+import { Button } from '@/components/ui/button'
 interface HeaderProps {
   pageTitle: string
   pageDescription: string
@@ -29,25 +30,28 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
         </div>
         <div className="flex items-center space-x-4">
           {!isAuthenticated ? (
-            <Link href="/login" className="hover:text-black text-base">
-              Login
+            <Link href="/login">
+              <Button className="bg-blue-300 hover:bg-blue-400 text-blue-600 font-semibold rounded-md transition-colors duration-300 ease-in-out cursor-pointer">
+                Login
+              </Button>
             </Link>
           ) : (
             <>
               <span className="text-base">
-                {user?.username || user?.email?.split('@')[0] || 'Anonymous'}
+                Look who's here – {user?.username || user?.email?.split('@')[0] || 'Anonymous'} in
+                the house!
               </span>
-              <button
+              <Button
                 onClick={() => {
                   if (confirm('Are you sure you want to logout?')) {
                     logout()
                     // No need to manually redirect, the logout function will handle it
                   }
                 }}
-                className="hover:text-black text-base cursor-pointer"
+                className="bg-amber-300 hover:bg-amber-400 text-amber-600 font-semibold rounded-md transition-colors duration-300 ease-in-out cursor-pointer"
               >
                 Logout
-              </button>
+              </Button>
             </>
           )}
         </div>

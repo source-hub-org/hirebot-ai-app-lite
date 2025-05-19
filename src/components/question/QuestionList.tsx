@@ -5,9 +5,9 @@ import { useEffect, useState, memo, useCallback } from 'react'
 import QuestionCard from '@/components/question/QuestionCard'
 import { AnswerSubmission } from '@/types/api'
 import { Button } from '@/components/ui/button'
-import { useCandidateContext } from '@/contexts/CandidateContext'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useLoading } from '@/hooks/useLoading'
+import { useAuthContext } from '@/contexts/AuthProvider'
 
 interface Submission {
   candidate_id: string
@@ -16,7 +16,7 @@ interface Submission {
 
 function QuestionList() {
   // Get candidate_id from context
-  const { candidateId } = useCandidateContext()
+  const { user } = useAuthContext()
 
   // Use the question hook for state management
   const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
@@ -27,7 +27,7 @@ function QuestionList() {
 
   // State to store all submissions
   const [submission, setSubmission] = useState<Submission>({
-    candidate_id: '', // Will be set from context when submitting
+    candidate_id: user?.candidate_id || '', // Will be set from context when submitting
     answers: [],
   })
 
@@ -35,7 +35,7 @@ function QuestionList() {
   useEffect(() => {
     if (questions && questions.length > 0) {
       // Create initial answers for all questions
-      const initialAnswers = questions.map((q) => ({
+      const initialAnswers = questions.map(q => ({
         question_id: q._id || '',
         answer: null,
         other: '',
@@ -43,9 +43,9 @@ function QuestionList() {
         is_skip: 0,
       }))
 
-      // Set the initial answers without referencing previous state
+      // Set the initial answers without referencing the previous state
       setSubmission({
-        candidate_id: '',
+        candidate_id: user?.candidate_id || '',
         answers: initialAnswers,
       })
     }
@@ -82,11 +82,11 @@ function QuestionList() {
     // Create a copy of the submission with the candidate_id from context
     const submissionData = {
       ...submission,
-      candidate_id: candidateId || 'demo-candidate-id', // Fallback to demo ID if no candidate selected
+      candidate_id: user?.candidate_id || 'demo-candidate-id', // Fallback to demo ID if no candidate selected
     }
 
     // Validate if the candidate is selected
-    if (!candidateId) {
+    if (!user?.candidate_id) {
       console.warn('No candidate selected. Using demo ID as fallback.')
     }
 
@@ -94,7 +94,7 @@ function QuestionList() {
     await withLoading(async () => {
       submitAnswers(submissionData)
     })
-  }, [candidateId, submission, submitAnswers, withLoading])
+  }, [user?.candidate_id, submission, submitAnswers, withLoading])
 
   // Loading state
   if (isLoading) {

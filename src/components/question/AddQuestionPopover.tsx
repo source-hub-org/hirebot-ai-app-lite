@@ -16,12 +16,10 @@ import { getTopics } from '@/services/topicsService'
 import { getLanguages } from '@/services/languagesService'
 import { getPositions } from '@/services/positionsService'
 import { Topic, Language, Position } from '@/types/api'
-import { useCandidateContext } from '@/contexts/CandidateContext'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useLoading } from '@/hooks/useLoading'
 
 export default function AddQuestionPopover() {
-  const { candidateId } = useCandidateContext()
   const { withLoading } = useLoading()
   const [open, setOpen] = useState(false)
   const [topics, setTopics] = useState<Topic[]>([])
@@ -88,9 +86,9 @@ export default function AddQuestionPopover() {
       page_size: parseInt(pageSize),
     }
 
-    // Call the searchQuestions mutation with loading indicator
+    // Call the searchQuestions mutation with the loading indicator
     await withLoading(async () => {
-      await searchQuestions(formData)
+      searchQuestions(formData)
 
       // Close the popover only if there's no error
       if (!searchError) {
@@ -124,10 +122,6 @@ export default function AddQuestionPopover() {
   const handleCancel = useCallback(() => {
     setOpen(false)
   }, [])
-
-  if (!candidateId) {
-    return null
-  }
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -266,7 +260,7 @@ export default function AddQuestionPopover() {
           </Button>
         </div>
 
-        {/* Show error message if search fails */}
+        {/* Show an error message if the search fails */}
         {searchError && (
           <div className="mt-2 p-2 text-sm text-red-600 bg-red-50 rounded border border-red-200">
             Error: {(searchError as Error).message}
