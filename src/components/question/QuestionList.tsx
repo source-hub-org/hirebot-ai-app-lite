@@ -2,6 +2,7 @@
 'use client'
 
 import { useEffect, useState, memo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import QuestionCard from '@/components/question/QuestionCard'
 import { AnswerSubmission } from '@/types/api'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,9 @@ interface Submission {
 function QuestionList() {
   // Get candidate_id from context
   const { user } = useAuthContext()
+  
+  // Use Next.js router for navigation
+  const router = useRouter()
 
   // Use the question hook for state management
   const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
@@ -92,9 +96,17 @@ function QuestionList() {
 
     // Use withLoading to show a global loading state during submission
     await withLoading(async () => {
-      submitAnswers(submissionData)
+      const result = await submitAnswers(submissionData)
+      
+      // If submission was successful and we have a submission ID, redirect to the results page
+      if (result && result.submission_id) {
+        // Short delay to allow the user to see the success message
+        setTimeout(() => {
+          router.push(`/submissions/${result.submission_id}`)
+        }, 1500)
+      }
     })
-  }, [user?.candidate_id, submission, submitAnswers, withLoading])
+  }, [user?.candidate_id, submission, submitAnswers, withLoading, router])
 
   // Loading state
   if (isLoading) {

@@ -184,7 +184,7 @@ export async function submitAnswers(submission: {
     point: number
     is_skip: number
   }>
-}): Promise<{ message: string; score?: number }> {
+}): Promise<{ message: string; score?: number; submission_id?: string }> {
   try {
     // Create a custom config for this specific request
     const config = {
@@ -192,9 +192,33 @@ export async function submitAnswers(submission: {
       baseURL: '',
     }
 
-    const response = await api.post<ApiResponse<{ message: string; score: number }>>(
+    const response = await api.post<ApiResponse<{ message: string; score: number; submission_id: string }>>(
       '/api/proxy/submissions',
       submission,
+      config
+    )
+    return handleSuccessResponse(response)
+  } catch (error) {
+    return handleErrorResponse(error)
+  }
+}
+
+/**
+ * Fetches a submission by ID
+ * 
+ * @param id - Submission ID
+ * @returns Promise resolving to the submission details
+ */
+export async function getSubmissionById(id: string): Promise<any> {
+  try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<any>>(
+      `/api/proxy/submissions/${id}`,
       config
     )
     return handleSuccessResponse(response)
@@ -211,6 +235,7 @@ const questionService = {
   deleteQuestion,
   generateQuestions,
   submitAnswers,
+  getSubmissionById,
 }
 
 export default questionService
