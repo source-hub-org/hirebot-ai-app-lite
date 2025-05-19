@@ -126,13 +126,13 @@ export default function AddQuestionPopover() {
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button className="fixed bottom-5 right-25 rounded cursor-pointer" variant="default">
+        <Button className="fixed top-5 right-5 rounded cursor-pointer" variant="default">
           <Plus className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-[400px] space-y-4 mr-[20px] mb-[15px]"
+        className="w-[400px] space-y-4 mr-[15px] mt-[5px]"
         sideOffset={5}
         onClick={handlePopoverClick}
       >
