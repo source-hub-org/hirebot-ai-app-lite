@@ -10,7 +10,13 @@ import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiR
  */
 export async function getTopics(): Promise<Topic[]> {
   try {
-    const response = await api.get<ApiResponse<Topic[]>>('/api/proxy/topics')
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Topic[]>>('/api/proxy/topics', config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -25,7 +31,13 @@ export async function getTopics(): Promise<Topic[]> {
  */
 export async function getTopicById(id: string): Promise<Topic> {
   try {
-    const response = await api.get<ApiResponse<Topic>>(`/api/proxy/topics/${id}`)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Topic>>(`/api/proxy/topics/${id}`, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -42,7 +54,13 @@ export async function createTopic(
   topic: Omit<Topic, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Topic> {
   try {
-    const response = await api.post<ApiResponse<Topic>>('/api/proxy/topics', topic)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.post<ApiResponse<Topic>>('/api/proxy/topics', topic, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -61,7 +79,13 @@ export async function updateTopic(
   topic: Partial<Omit<Topic, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Topic> {
   try {
-    const response = await api.put<ApiResponse<Topic>>(`/api/proxy/topics/${id}`, topic)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.put<ApiResponse<Topic>>(`/api/proxy/topics/${id}`, topic, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -76,7 +100,16 @@ export async function updateTopic(
  */
 export async function deleteTopic(id: string): Promise<{ message: string }> {
   try {
-    const response = await api.delete<ApiResponse<{ message: string }>>(`/api/proxy/topics/${id}`)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.delete<ApiResponse<{ message: string }>>(
+      `/api/proxy/topics/${id}`,
+      config
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

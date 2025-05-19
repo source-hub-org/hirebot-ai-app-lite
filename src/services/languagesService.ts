@@ -21,8 +21,16 @@ export async function getLanguages(params: LanguageQueryParams = {}): Promise<{
 }> {
   try {
     const queryString = buildQueryString(params)
+
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.get<PaginatedResponse<Language[]>>(
-      `/api/proxy/languages${queryString}`
+      `/api/proxy/languages${queryString}`,
+      config
     )
 
     return {
@@ -42,7 +50,13 @@ export async function getLanguages(params: LanguageQueryParams = {}): Promise<{
  */
 export async function getLanguageById(id: string): Promise<Language> {
   try {
-    const response = await api.get<ApiResponse<Language>>(`/api/proxy/languages/${id}`)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Language>>(`/api/proxy/languages/${id}`, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -59,7 +73,13 @@ export async function createLanguage(
   language: Omit<Language, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Language> {
   try {
-    const response = await api.post<ApiResponse<Language>>('/api/proxy/languages', language)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.post<ApiResponse<Language>>('/api/proxy/languages', language, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -78,7 +98,17 @@ export async function updateLanguage(
   language: Partial<Omit<Language, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Language> {
   try {
-    const response = await api.put<ApiResponse<Language>>(`/api/proxy/languages/${id}`, language)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.put<ApiResponse<Language>>(
+      `/api/proxy/languages/${id}`,
+      language,
+      config
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -93,8 +123,15 @@ export async function updateLanguage(
  */
 export async function deleteLanguage(id: string): Promise<{ message: string }> {
   try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.delete<ApiResponse<{ message: string }>>(
-      `/api/proxy/languages/${id}`
+      `/api/proxy/languages/${id}`,
+      config
     )
     return handleSuccessResponse(response)
   } catch (error) {

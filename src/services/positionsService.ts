@@ -20,8 +20,16 @@ export async function getPositions(params: PositionQueryParams = {}): Promise<{
 }> {
   try {
     const queryString = buildQueryString(params)
+
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.get<PaginatedResponse<Position[]>>(
-      `/api/proxy/positions${queryString}`
+      `/api/proxy/positions${queryString}`,
+      config
     )
 
     return {
@@ -41,7 +49,13 @@ export async function getPositions(params: PositionQueryParams = {}): Promise<{
  */
 export async function getPositionById(id: string): Promise<Position> {
   try {
-    const response = await api.get<ApiResponse<Position>>(`/api/proxy/positions/${id}`)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Position>>(`/api/proxy/positions/${id}`, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -58,7 +72,13 @@ export async function createPosition(
   position: Omit<Position, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Position> {
   try {
-    const response = await api.post<ApiResponse<Position>>('/api/proxy/positions', position)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.post<ApiResponse<Position>>('/api/proxy/positions', position, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

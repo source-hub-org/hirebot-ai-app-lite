@@ -61,19 +61,19 @@ export default function AddQuestionPopover() {
     } finally {
       setFormLoading({ topics: false, languages: false, positions: false })
     }
-  }, [withLoading, setTopics, setLanguages, setPositions, setFormLoading])
+  }, [withLoading])
 
   // Fetch data when the popover opens
   useEffect(() => {
     if (open) {
       fetchData()
     }
-  }, [open, fetchData])
+  }, [open])
 
   // Use the questions hook for state management
   const { searchQuestions, isSearching, searchError } = useQuestions()
 
-  const handleAddQuestions = async () => {
+  const handleAddQuestions = useCallback(async () => {
     // Validate required fields
     if (!selectedTopic || !selectedLanguage || !selectedPosition || !pageSize) {
       alert('Please fill in all fields')
@@ -97,24 +97,33 @@ export default function AddQuestionPopover() {
         setOpen(false)
       }
     })
-  }
+  }, [
+    selectedTopic,
+    selectedLanguage,
+    selectedPosition,
+    pageSize,
+    withLoading,
+    searchQuestions,
+    searchError,
+    setOpen,
+  ])
 
   // Handle clicks inside the popover to prevent it from closing when interacting with MultiSelect
-  const handlePopoverClick = (e: React.MouseEvent) => {
+  const handlePopoverClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-  }
+  }, [])
 
   // Handle popover open/close manually
-  const handleOpenChange = (isOpen: boolean) => {
+  const handleOpenChange = useCallback((isOpen: boolean) => {
     // Set the open state based on the isOpen parameter
     // This will handle both opening and closing
     setOpen(isOpen)
-  }
+  }, [])
 
   // Handle cancel button click
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setOpen(false)
-  }
+  }, [])
 
   if (!candidateId) {
     return null
@@ -123,11 +132,7 @@ export default function AddQuestionPopover() {
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <Button
-          className="fixed bottom-4 right-4 rounded cursor-pointer"
-          variant="default"
-          onClick={() => setOpen(true)}
-        >
+        <Button className="fixed bottom-5 right-25 rounded cursor-pointer" variant="default">
           <Plus className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
@@ -157,7 +162,10 @@ export default function AddQuestionPopover() {
               </SelectTrigger>
               <SelectContent>
                 {topics.map(topic => (
-                  <SelectItem key={topic._id || topic.title} value={topic._id || topic.title}>
+                  <SelectItem
+                    key={topic._id || topic.title}
+                    value={String(topic._id || topic.title)}
+                  >
                     {topic.title}
                   </SelectItem>
                 ))}
@@ -185,7 +193,7 @@ export default function AddQuestionPopover() {
                 {languages.map(language => (
                   <SelectItem
                     key={language._id || language.name}
-                    value={language._id || language.name}
+                    value={String(language._id || language.name)}
                   >
                     {language.name}
                   </SelectItem>
@@ -214,7 +222,7 @@ export default function AddQuestionPopover() {
                 {positions.map(position => (
                   <SelectItem
                     key={position._id || position.slug}
-                    value={position._id || position.slug}
+                    value={String(position._id || position.slug)}
                   >
                     {position.title}
                   </SelectItem>

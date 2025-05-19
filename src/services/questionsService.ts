@@ -21,8 +21,16 @@ export async function searchQuestions(params: QuestionSearchParams = {}): Promis
 }> {
   try {
     const queryString = buildQueryString(params)
+
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.get<PaginatedResponse<Question[]>>(
-      `/api/proxy/questions/search${queryString}`
+      `/api/proxy/questions/search${queryString}`,
+      config
     )
 
     return {
@@ -42,7 +50,13 @@ export async function searchQuestions(params: QuestionSearchParams = {}): Promis
  */
 export async function getQuestionById(id: string): Promise<Question> {
   try {
-    const response = await api.get<ApiResponse<Question>>(`/api/proxy/questions/${id}`)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Question>>(`/api/proxy/questions/${id}`, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -59,7 +73,13 @@ export async function createQuestion(
   question: Omit<Question, '_id' | 'createdAt' | 'updatedAt'>
 ): Promise<Question> {
   try {
-    const response = await api.post<ApiResponse<Question>>('/api/proxy/questions', question)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.post<ApiResponse<Question>>('/api/proxy/questions', question, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -78,7 +98,17 @@ export async function updateQuestion(
   question: Partial<Omit<Question, '_id' | 'createdAt' | 'updatedAt'>>
 ): Promise<Question> {
   try {
-    const response = await api.put<ApiResponse<Question>>(`/api/proxy/questions/${id}`, question)
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.put<ApiResponse<Question>>(
+      `/api/proxy/questions/${id}`,
+      question,
+      config
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
@@ -93,8 +123,15 @@ export async function updateQuestion(
  */
 export async function deleteQuestion(id: string): Promise<{ message: string }> {
   try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.delete<ApiResponse<{ message: string }>>(
-      `/api/proxy/questions/${id}`
+      `/api/proxy/questions/${id}`,
+      config
     )
     return handleSuccessResponse(response)
   } catch (error) {
@@ -115,9 +152,16 @@ export async function generateQuestions(params: {
   count?: number
 }): Promise<Question[]> {
   try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.post<ApiResponse<Question[]>>(
       '/api/proxy/questions/generate',
-      params
+      params,
+      config
     )
     return handleSuccessResponse(response)
   } catch (error) {
@@ -142,9 +186,16 @@ export async function submitAnswers(submission: {
   }>
 }): Promise<{ message: string; score?: number }> {
   try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
     const response = await api.post<ApiResponse<{ message: string; score: number }>>(
       '/api/proxy/submissions',
-      submission
+      submission,
+      config
     )
     return handleSuccessResponse(response)
   } catch (error) {
