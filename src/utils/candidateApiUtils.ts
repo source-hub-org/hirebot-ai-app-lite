@@ -1,6 +1,6 @@
 // src/utils/candidateApiUtils.ts
-import { Candidate, CandidateQueryParams } from '../types/api'
-import candidateService from '../services/candidates.service'
+import { Candidate, CandidateQueryParams } from '@/types/api'
+import candidateService from '@/services/candidatesService'
 
 /**
  * Fetches candidates with error handling and logging

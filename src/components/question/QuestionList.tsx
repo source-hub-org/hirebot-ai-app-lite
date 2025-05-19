@@ -1,69 +1,54 @@
 // src/components/question/QuestionList.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, memo } from 'react'
 import QuestionCard from '@/components/question/QuestionCard'
-import { Question } from '@/types/api'
+import { AnswerSubmission, Question } from '@/types/api'
 import { Button } from '@/components/ui/button'
-import { submitAnswers } from '@/services/questions.service'
 import { useCandidateContext } from '@/contexts/CandidateContext'
-
-// Define the submission interface
-interface AnswerSubmission {
-  question_id: string
-  answer: number | null
-  other: string
-  point: number
-  is_skip: number
-}
+import { useQuestions } from '@/hooks/useQuestions'
+import { useLoading } from '@/hooks/useLoading'
+import { VirtualizedList } from '@/components/ui/virtualized-list'
 
 interface Submission {
   candidate_id: string
   answers: AnswerSubmission[]
 }
 
-export default function QuestionList() {
-  // State to store questions from API
-  const [questions, setQuestions] = useState<Question[]>([])
+function QuestionList() {
   // Get candidate_id from context
   const { candidateId } = useCandidateContext()
+
+  // Use the questions hook for state management
+  const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
+    useQuestions()
+
+  // Use the loading hook for global loading state
+  const { withLoading } = useLoading()
+
   // State to store all submissions
   const [submission, setSubmission] = useState<Submission>({
     candidate_id: '', // Will be set from context when submitting
     answers: [],
   })
 
-  // Listen for the custom event from AddQuestionPopover
+  // Initialize empty answers when questions change
   useEffect(() => {
-    const handleQuestionsLoaded = (event: CustomEvent) => {
-      const { questions } = event.detail
-      setQuestions(questions)
+    if (questions && questions.length > 0) {
+      const initialAnswers = questions.map((q: Question) => ({
+        question_id: q._id || '',
+        answer: null,
+        other: '',
+        point: 0,
+        is_skip: 0,
+      }))
 
-      // Initialize empty answers for each question
-      if (questions && questions.length > 0) {
-        const initialAnswers = questions.map((q: Question) => ({
-          question_id: q._id || '',
-          answer: null,
-          other: '',
-          point: 0,
-          is_skip: 0,
-        }))
-
-        setSubmission(prev => ({
-          ...prev,
-          answers: initialAnswers,
-        }))
-      }
+      setSubmission(prev => ({
+        ...prev,
+        answers: initialAnswers,
+      }))
     }
-
-    // Add event listener
-    window.addEventListener('questionsLoaded', handleQuestionsLoaded as EventListener)
-
-    // Clean up
-    return () => {
-      window.removeEventListener('questionsLoaded', handleQuestionsLoaded as EventListener)
-    }
-  }, [])
+  }, [questions])
 
   // Handle answer changes from individual question cards
   const handleAnswerChange = (questionSubmission: AnswerSubmission) => {
@@ -89,18 +74,9 @@ export default function QuestionList() {
         answers: newAnswers,
       }
     })
-
-    // For debugging - log the current submission state
-    console.log('Current submission:', submission)
   }
 
   // Handle submission of all answers
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submissionResult, setSubmissionResult] = useState<{
-    message?: string
-    score?: number
-  } | null>(null)
-
   const handleSubmit = async () => {
     // Create a copy of the submission with the candidate_id from context
     const submissionData = {
@@ -113,30 +89,51 @@ export default function QuestionList() {
       console.warn('No candidate selected. Using demo ID as fallback.')
     }
 
-    setIsSubmitting(true)
-    try {
-      const result = await submitAnswers(submissionData)
-      setSubmissionResult(result)
-      console.log('Submission result:', result)
-    } catch (error) {
-      console.error('Error submitting answers:', error)
-      setSubmissionResult({ message: 'Failed to submit answers. Please try again.' })
-    } finally {
-      setIsSubmitting(false)
-    }
+    // Use withLoading to show global loading state during submission
+    await withLoading(async () => {
+      await submitAnswers(submissionData)
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <section className="p-4">
+        <div className="text-center text-gray-500">Loading questions...</div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="p-4">
+        <div className="p-4 border border-red-300 bg-red-50 text-red-800 rounded-md">
+          Error loading questions: {(error as Error).message}
+        </div>
+      </section>
+    )
   }
 
   return (
     <section className="p-4 space-y-4">
       {questions.length > 0 ? (
         <>
-          {questions.map((question, idx) => (
-            <QuestionCard
-              key={question._id || idx}
-              question={question}
-              onAnswerChange={handleAnswerChange}
+          {/* Use VirtualizedList for better performance with long lists */}
+          <div className="mb-6">
+            <VirtualizedList<Question>
+              items={questions as Question[]}
+              height={600} // Adjust height as needed
+              itemHeight={200} // Approximate height of each question card
+              renderItem={(question, idx) => (
+                <div className="py-2">
+                  <QuestionCard
+                    key={question._id || idx}
+                    question={question}
+                    onAnswerChange={handleAnswerChange}
+                  />
+                </div>
+              )}
             />
-          ))}
+          </div>
 
           <div className="mt-6 flex flex-col items-center">
             <Button
@@ -171,3 +168,6 @@ export default function QuestionList() {
     </section>
   )
 }
+
+// Export the memoized component to prevent unnecessary re-renders
+export default memo(QuestionList)

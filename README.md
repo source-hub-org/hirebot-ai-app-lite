@@ -16,8 +16,10 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 - **UI Components**: Shadcn UI
 - **State Management**: React Context API
 - **API Integration**: Custom API services for questions, candidates, and submissions
+- **Testing**: Jest, React Testing Library
 
 ## Screenshots
+
 ![HireBot AI App Lite Screenshot](./assets/screenshot.png)
 
 ## Getting Started
@@ -54,10 +56,30 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 
 - `/src/app`: Next.js app router pages
 - `/src/components`: Reusable UI components
+- `/src/components/common/__tests__`: Component tests
 - `/src/contexts`: React context providers
 - `/src/services`: API service functions
 - `/src/types`: TypeScript type definitions
 - `/src/lib`: Utility functions
+
+## Testing
+
+The project uses Jest and React Testing Library for testing components and functionality.
+
+### Running Tests
+
+```bash
+# Run all tests
+bun test
+
+# Run tests in watch mode
+bun test:watch
+
+# Run tests for a specific component
+bun test -- LoadingComponent
+```
+
+For more information about the testing approach, see the [testing documentation](./src/components/common/__tests__/README.md).
 
 ## Contributing
 

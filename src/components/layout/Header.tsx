@@ -4,12 +4,14 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useAuthContext } from '@/contexts/AuthProvider'
 interface HeaderProps {
   pageTitle: string
   pageDescription: string
 }
 
 const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
+  const { user, logout, isAuthenticated } = useAuthContext()
   return (
     <div className="w-full">
       {/* Top-bar */}
@@ -25,18 +27,43 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
             Contact
           </Link>
         </div>
-        <div>
-          <Link href="/login" className="hover:text-black text-base">
-            Login
-          </Link>
+        <div className="flex items-center space-x-4">
+          {!isAuthenticated ? (
+            <Link href="/login" className="hover:text-black text-base">
+              Login
+            </Link>
+          ) : (
+            <>
+              <span className="text-base">
+                {user?.username || user?.email?.split('@')[0] || 'Anonymous'}
+              </span>
+              <button
+                onClick={() => {
+                  if (confirm('Are you sure you want to logout?')) {
+                    logout()
+                    // No need to manually redirect, the logout function will handle it
+                  }
+                }}
+                className="hover:text-black text-base cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       {/* Hero Image with overlay content */}
       <div className="relative w-full h-[360px]">
-        <Image src="/cover-jp.jpg" alt="Hero Cover" fill className="object-cover" priority />
+        <Image
+          src="/cover.png"
+          alt="Hero Cover"
+          fill
+          className="filter grayscale object-cover object-center"
+          priority
+        />
         {/* Overlay layer */}
-        <div className="absolute inset-0 bg-amber-900/50" />
+        <div className="absolute inset-0 bg-black opacity-60" />
 
         {/* Text Content */}
         <div className="absolute left-10 top-1/2 -translate-y-1/2 text-white max-w-1/2 z-10">

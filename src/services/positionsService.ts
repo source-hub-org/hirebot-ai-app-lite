@@ -1,8 +1,8 @@
-// src/services/positions.service.ts
-import api from '../../lib/axios.config'
-import { ApiResponse, PaginatedResponse, Position, PositionQueryParams } from '../types/api'
-import { buildQueryString } from '../helpers/buildQueryString'
-import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApiResponse'
+// src/services/positionsService.ts
+import api from '../libs/axiosConfig'
+import { ApiResponse, PaginatedResponse, Position, PositionQueryParams } from '@/types/api'
+import { buildQueryString } from '@/helpers/buildQueryString'
+import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
  * Fetches a list of positions with optional filtering and pagination

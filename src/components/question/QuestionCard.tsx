@@ -46,7 +46,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
     if (onAnswerChange) {
       onAnswerChange(newSubmission)
     }
-  }, [selectedOption, otherAnswer, showExplanation])
+  }, [selectedOption, otherAnswer, showExplanation, onAnswerChange, submission])
 
   // Handle option selection
   const handleOptionSelect = (index: number) => {

@@ -1,8 +1,8 @@
-// src/services/questions.service.ts
-import api from '../../lib/axios.config'
-import { ApiResponse, PaginatedResponse, Question, QuestionSearchParams } from '../types/api'
-import { buildQueryString } from '../helpers/buildQueryString'
-import { handleSuccessResponse, handleErrorResponse } from '../helpers/handleApiResponse'
+// src/services/questionsService.ts
+import api from '../libs/axiosConfig'
+import { ApiResponse, PaginatedResponse, Question, QuestionSearchParams } from '@/types/api'
+import { buildQueryString } from '@/helpers/buildQueryString'
+import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
  * Searches for questions based on various criteria

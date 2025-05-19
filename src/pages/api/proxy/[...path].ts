@@ -3,14 +3,16 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import axios, { AxiosError } from 'axios'
 
 // Remove trailing slash if present to avoid double slashes
-const API_BASE_URL = (process.env.API_BASE_URL || 'http://localhost:8000/api').replace(/\/$/, '')
+const NEXT_PUBLIC_API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'
+).replace(/\/$/, '')
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { path = [] } = req.query
-  const targetUrl = `${API_BASE_URL}/${Array.isArray(path) ? path.join('/') : path}`
+  const targetUrl = `${NEXT_PUBLIC_API_BASE_URL}/${Array.isArray(path) ? path.join('/') : path}`
 
   // For debugging
-  console.log('API_BASE_URL:', process.env.API_BASE_URL)
+  console.log('NEXT_PUBLIC_API_BASE_URL:', process.env.NEXT_PUBLIC_API_BASE_URL)
 
   // Log Request information
   console.log('Request to:', targetUrl)

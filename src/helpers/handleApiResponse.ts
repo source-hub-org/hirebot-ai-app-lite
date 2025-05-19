@@ -1,15 +1,22 @@
 // src/helpers/handleApiResponse.ts
 import { AxiosError, AxiosResponse } from 'axios'
-import { ApiResponse, ErrorResponse, ValidationErrorResponse } from '../types/api'
+import { ApiResponse, ErrorResponse, ValidationErrorResponse } from '@/types/api'
 
 /**
  * Handles successful API responses
  *
  * @param response - Axios response object
  * @returns The data from the response
+ * @throws Error when response status is 'error'
  */
 export function handleSuccessResponse<T>(response: AxiosResponse<ApiResponse<T>>): T {
-  return response.data.data
+  const { status, message, data } = response.data
+
+  if (status === 'error') {
+    throw new Error(`API error: ${message || 'Unknown error'}`)
+  }
+
+  return data
 }
 
 /**
