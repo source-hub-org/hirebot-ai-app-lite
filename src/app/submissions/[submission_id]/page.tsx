@@ -8,61 +8,25 @@ import { useLoading } from '@/hooks/useLoading'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-
-interface SubmissionQuestion {
-  question_id: string
-  answer: number | null
-  other: string
-  point: number
-  is_skip: number
-  question: {
-    _id: string
-    question: string
-    options: string[]
-    correctAnswer: number
-    difficulty: string
-    category: string
-    topic: string
-    topic_id: string
-  }
-}
-
-interface Submission {
-  _id: string
-  candidate_id: string
-  answers: SubmissionQuestion[]
-  essay?: {
-    question: string | null
-    answer: string | null
-    is_skip: number
-  }
-  review?: {
-    comment: string
-    status: string
-  }
-  candidate?: {
-    _id: string
-    full_name: string
-    email: string
-    phone_number: string
-    skills: string[]
-    programming_languages: string[]
-    interview_level: string
-    status: string
-  }
-}
+import { Submission } from '@/types/api'
+import { CheckCircle, XCircle, SkipForward } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 export default function SubmissionDetailsPage() {
   const params = useParams()
   const submissionId = params?.submission_id as string
+
   const [submission, setSubmission] = useState<Submission | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { withLoading } = useLoading()
 
+  // Helper function to check if an answer is correct
+  const isCorrectAnswer = (item: any) => item.answer === item.question?.correctAnswer
+
   // Calculate statistics
   const totalQuestions = submission?.answers.length || 0
-  const correctAnswers = submission?.answers.filter(a => a.point > 0).length || 0
+  const correctAnswers = submission?.answers.filter(a => a.answer === a.question?.correctAnswer).length || 0
   const skippedQuestions = submission?.answers.filter(a => a.is_skip === 1).length || 0
   const scorePercentage =
     totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
@@ -71,7 +35,7 @@ export default function SubmissionDetailsPage() {
     const fetchSubmission = async () => {
       try {
         setLoading(true)
-        const data = await withLoading(() => getSubmissionById(submissionId))
+        const data = await withLoading(() => getSubmissionById(submissionId, true))
 
         if (data) {
           setSubmission(Array.isArray(data) ? data[0] : data)
@@ -89,7 +53,8 @@ export default function SubmissionDetailsPage() {
     if (submissionId) {
       fetchSubmission().then(() => console.log('fetchSubmission called'))
     }
-  }, [submissionId, withLoading])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submissionId])
 
   if (loading) {
     return (
@@ -193,47 +158,81 @@ export default function SubmissionDetailsPage() {
           {submission.answers.map((item, index) => (
             <Card
               key={item.question_id}
-              className={`border-l-4 ${item.point > 0 ? 'border-l-green-500' : item.is_skip ? 'border-l-amber-500' : 'border-l-red-500'}`}
+              className={`border-l-4 ${
+                isCorrectAnswer(item)
+                  ? 'border-l-green-500'
+                  : item.is_skip
+                    ? 'border-l-amber-500'
+                    : 'border-l-red-500'
+              }`}
             >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-base">
-                    {index + 1}. {item.question.question}
+                    {index + 1}. {item.question?.question || 'Question not available'}
                   </CardTitle>
-                  <Badge
-                    variant={item.point > 0 ? 'success' : item.is_skip ? 'warning' : 'destructive'}
-                  >
-                    {item.point > 0 ? 'Correct' : item.is_skip ? 'Skipped' : 'Incorrect'}
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant={
+                            isCorrectAnswer(item)
+                              ? 'success'
+                              : item.is_skip
+                                ? 'warning'
+                                : 'destructive'
+                          }
+                          className="flex items-center gap-1 p-0 m-0 text-white"
+                        >
+                          {isCorrectAnswer(item) ? (
+                            <CheckCircle className="h-4 w-4" />
+                          ) : item.is_skip ? (
+                            <SkipForward className="h-4 w-4" />
+                          ) : (
+                            <XCircle className="h-4 w-4" />
+                          )}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {isCorrectAnswer(item) ? 'Correct' : item.is_skip ? 'Skipped' : 'Incorrect'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <CardDescription>
-                  Difficulty: {item.question.difficulty} | Topic: {item.question.topic}
+                  Difficulty: {item.question?.difficulty || 'N/A'} | Topic:{' '}
+                  {item.question?.topic || 'N/A'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {item.question.options.map((option, optionIndex) => (
-                    <div
-                      key={optionIndex}
-                      className={`p-3 rounded-md ${
-                        item.answer === optionIndex && item.answer === item.question.correctAnswer
-                          ? 'bg-green-100 border border-green-300'
-                          : item.answer === optionIndex &&
-                              item.answer !== item.question.correctAnswer
-                            ? 'bg-red-100 border border-red-300'
-                            : optionIndex === item.question.correctAnswer
-                              ? 'bg-green-50 border border-green-200'
-                              : 'bg-gray-50 border border-gray-200'
-                      }`}
-                    >
-                      <div className="flex items-start">
-                        <div className="mr-2 font-medium">
-                          {String.fromCharCode(65 + optionIndex)}.
+                  {item.question?.options ? (
+                    item.question.options.map((option, optionIndex) => (
+                      <div
+                        key={optionIndex}
+                        className={`p-3 rounded-md ${
+                          item.answer === optionIndex && isCorrectAnswer(item)
+                            ? 'bg-green-100 border border-green-300'
+                            : item.answer === optionIndex && !isCorrectAnswer(item)
+                              ? 'bg-red-100 border border-red-300'
+                              : optionIndex === item.question?.correctAnswer
+                                ? 'bg-green-50 border border-green-200'
+                                : 'bg-gray-50 border border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-start">
+                          <div className="mr-2 font-medium">
+                            {String.fromCharCode(65 + optionIndex)}.
+                          </div>
+                          <div>{option}</div>
                         </div>
-                        <div>{option}</div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="p-3 rounded-md bg-gray-50 border border-gray-200">
+                      <p>No options available for this question</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>

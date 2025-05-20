@@ -222,9 +222,10 @@ export async function submitAnswers(submission: {
  * Fetches a submission by ID
  *
  * @param id - Submission ID
+ * @param enrich - Whether to enrich the submission with additional data (default: "true")
  * @returns Promise resolving to the submission details
  */
-export async function getSubmissionById(id: string): Promise<Submission> {
+export async function getSubmissionById(id: string, enrich: boolean = true): Promise<Submission> {
   try {
     // Create a custom config for this specific request
     const config = {
@@ -232,7 +233,10 @@ export async function getSubmissionById(id: string): Promise<Submission> {
       baseURL: '',
     }
 
-    const response = await api.get<ApiResponse<Submission>>(`/api/proxy/submissions/${id}`, config)
+    const response = await api.get<ApiResponse<Submission>>(
+      `/api/proxy/submissions/${id}?enrich=${enrich.toString()}`,
+      config
+    )
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)
