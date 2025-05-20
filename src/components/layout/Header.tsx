@@ -29,6 +29,9 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
           <Link href="/contact" className="hover:text-black text-base">
             Contact
           </Link>
+          <Link href="/submissions/new" className="hover:text-black text-base underline">
+            Take a quiz
+          </Link>
         </div>
         <div className="flex items-center space-x-4">
           {!isAuthenticated ? (
