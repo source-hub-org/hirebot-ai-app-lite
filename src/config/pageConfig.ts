@@ -29,6 +29,10 @@ const pageConfig: PageConfigMap = {
     title: 'Create new test',
     description: 'Start building your custom test from scratch with our intuitive interface.',
   },
+  '/submissions/:submission_id': {
+    title: 'Test Details',
+    description: 'View and manage the details of your technical assessment.',
+  },
   // Add more routes as needed
 }
 
@@ -39,7 +43,18 @@ const defaultConfig: PageConfig = {
 }
 
 export const getPageConfig = (path: string): PageConfig => {
-  return pageConfig[path] || defaultConfig
+  // First try direct match
+  if (pageConfig[path]) {
+    return pageConfig[path]
+  }
+
+  // Handle dynamic routes
+  if (path.startsWith('/submissions/') && path !== '/submissions/new') {
+    return pageConfig['/submissions/:submission_id']
+  }
+
+  // Default fallback
+  return defaultConfig
 }
 
 export default pageConfig
