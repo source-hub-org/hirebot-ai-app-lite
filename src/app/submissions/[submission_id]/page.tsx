@@ -8,7 +8,7 @@ import { useLoading } from '@/hooks/useLoading'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Submission } from '@/types/api'
+import { Submission, SubmissionQuestion } from '@/types/api'
 import { CheckCircle, XCircle, SkipForward } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -22,11 +22,12 @@ export default function SubmissionDetailsPage() {
   const { withLoading } = useLoading()
 
   // Helper function to check if an answer is correct
-  const isCorrectAnswer = (item: any) => item.answer === item.question?.correctAnswer
+  const isCorrectAnswer = (item: SubmissionQuestion) => item.answer === item.question?.correctAnswer
 
   // Calculate statistics
   const totalQuestions = submission?.answers.length || 0
-  const correctAnswers = submission?.answers.filter(a => a.answer === a.question?.correctAnswer).length || 0
+  const correctAnswers =
+    submission?.answers.filter(a => a.answer === a.question?.correctAnswer).length || 0
   const skippedQuestions = submission?.answers.filter(a => a.is_skip === 1).length || 0
   const scorePercentage =
     totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0

@@ -72,18 +72,12 @@ export default function AddQuestionPopover() {
   const { searchQuestions, isSearching, searchError } = useQuestions()
 
   const handleAddQuestions = useCallback(async () => {
-    // Validate required fields
-    if (!selectedTopic || !selectedLanguage || !selectedPosition || !pageSize) {
-      alert('Please fill in all fields')
-      return
-    }
-
     // Prepare data for API call
     const formData = {
-      topic: selectedTopic,
-      language: selectedLanguage,
-      position: selectedPosition,
-      page_size: parseInt(pageSize),
+      topic_id: selectedTopic || '',
+      language_id: selectedLanguage || '',
+      position_id: selectedPosition || '',
+      page_size: parseInt(pageSize) || 10,
     }
 
     // Call the searchQuestions mutation with the loading indicator
