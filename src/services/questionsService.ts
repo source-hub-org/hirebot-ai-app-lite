@@ -1,6 +1,12 @@
 // src/services/questionsService.ts
 import api from '../libs/axiosConfig'
-import { ApiResponse, PaginatedResponse, Question, QuestionSearchParams } from '@/types/api'
+import {
+  ApiResponse,
+  PaginatedResponse,
+  Question,
+  QuestionSearchParams,
+  Submission,
+} from '@/types/api'
 import { buildQueryString } from '@/helpers/buildQueryString'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
@@ -184,7 +190,7 @@ export async function submitAnswers(submission: {
     point: number
     is_skip: number
   }>
-}): Promise<{ message: string; score?: number; submission_id?: string }> {
+}): Promise<{ message: string; score?: number; _id?: string }> {
   try {
     // Create a custom config for this specific request
     const config = {
@@ -192,24 +198,33 @@ export async function submitAnswers(submission: {
       baseURL: '',
     }
 
-    const response = await api.post<ApiResponse<{ message: string; score: number; submission_id: string }>>(
+    console.log('Submitting answers with data:', submission)
+
+    const response = await api.post<ApiResponse<{ message: string; score: number; _id: string }>>(
       '/api/proxy/submissions',
       submission,
       config
     )
-    return handleSuccessResponse(response)
+
+    console.log('API response:', response.data)
+
+    const result = handleSuccessResponse(response)
+    console.log('Processed result:', result)
+
+    return result
   } catch (error) {
+    console.error('Error in submitAnswers:', error)
     return handleErrorResponse(error)
   }
 }
 
 /**
  * Fetches a submission by ID
- * 
+ *
  * @param id - Submission ID
  * @returns Promise resolving to the submission details
  */
-export async function getSubmissionById(id: string): Promise<any> {
+export async function getSubmissionById(id: string): Promise<Submission> {
   try {
     // Create a custom config for this specific request
     const config = {
@@ -217,10 +232,7 @@ export async function getSubmissionById(id: string): Promise<any> {
       baseURL: '',
     }
 
-    const response = await api.get<ApiResponse<any>>(
-      `/api/proxy/submissions/${id}`,
-      config
-    )
+    const response = await api.get<ApiResponse<Submission>>(`/api/proxy/submissions/${id}`, config)
     return handleSuccessResponse(response)
   } catch (error) {
     return handleErrorResponse(error)

@@ -54,7 +54,7 @@ interface Submission {
 
 export default function SubmissionDetailsPage() {
   const params = useParams()
-  const submissionId = params.submission_id as string
+  const submissionId = params?.submission_id as string
   const [submission, setSubmission] = useState<Submission | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -64,16 +64,15 @@ export default function SubmissionDetailsPage() {
   const totalQuestions = submission?.answers.length || 0
   const correctAnswers = submission?.answers.filter(a => a.point > 0).length || 0
   const skippedQuestions = submission?.answers.filter(a => a.is_skip === 1).length || 0
-  const scorePercentage = totalQuestions > 0 
-    ? Math.round((correctAnswers / totalQuestions) * 100) 
-    : 0
+  const scorePercentage =
+    totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
 
   useEffect(() => {
     const fetchSubmission = async () => {
       try {
         setLoading(true)
         const data = await withLoading(() => getSubmissionById(submissionId))
-        
+
         if (data) {
           setSubmission(Array.isArray(data) ? data[0] : data)
         } else {
@@ -88,7 +87,7 @@ export default function SubmissionDetailsPage() {
     }
 
     if (submissionId) {
-      fetchSubmission()
+      fetchSubmission().then(() => console.log('fetchSubmission called'))
     }
   }, [submissionId, withLoading])
 
@@ -108,9 +107,7 @@ export default function SubmissionDetailsPage() {
     return (
       <MainLayout>
         <div className="container mx-auto p-4">
-          <div className="p-4 border border-red-300 bg-red-50 text-red-800 rounded-md">
-            {error}
-          </div>
+          <div className="p-4 border border-red-300 bg-red-50 text-red-800 rounded-md">{error}</div>
         </div>
       </MainLayout>
     )
@@ -132,7 +129,7 @@ export default function SubmissionDetailsPage() {
     <MainLayout>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-6">Submission Results</h1>
-        
+
         {/* Candidate Information */}
         {submission.candidate && (
           <Card className="mb-6">
@@ -161,7 +158,7 @@ export default function SubmissionDetailsPage() {
             </CardContent>
           </Card>
         )}
-        
+
         {/* Summary Card */}
         <Card className="mb-6">
           <CardHeader>
@@ -189,18 +186,23 @@ export default function SubmissionDetailsPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         {/* Questions and Answers */}
         <h2 className="text-xl font-semibold mb-4">Questions & Answers</h2>
         <div className="space-y-4">
           {submission.answers.map((item, index) => (
-            <Card key={item.question_id} className={`border-l-4 ${item.point > 0 ? 'border-l-green-500' : item.is_skip ? 'border-l-amber-500' : 'border-l-red-500'}`}>
+            <Card
+              key={item.question_id}
+              className={`border-l-4 ${item.point > 0 ? 'border-l-green-500' : item.is_skip ? 'border-l-amber-500' : 'border-l-red-500'}`}
+            >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-base">
                     {index + 1}. {item.question.question}
                   </CardTitle>
-                  <Badge variant={item.point > 0 ? 'success' : item.is_skip ? 'warning' : 'destructive'}>
+                  <Badge
+                    variant={item.point > 0 ? 'success' : item.is_skip ? 'warning' : 'destructive'}
+                  >
                     {item.point > 0 ? 'Correct' : item.is_skip ? 'Skipped' : 'Incorrect'}
                   </Badge>
                 </div>
@@ -211,20 +213,23 @@ export default function SubmissionDetailsPage() {
               <CardContent>
                 <div className="space-y-2">
                   {item.question.options.map((option, optionIndex) => (
-                    <div 
+                    <div
                       key={optionIndex}
                       className={`p-3 rounded-md ${
                         item.answer === optionIndex && item.answer === item.question.correctAnswer
                           ? 'bg-green-100 border border-green-300'
-                          : item.answer === optionIndex && item.answer !== item.question.correctAnswer
-                          ? 'bg-red-100 border border-red-300'
-                          : optionIndex === item.question.correctAnswer
-                          ? 'bg-green-50 border border-green-200'
-                          : 'bg-gray-50 border border-gray-200'
+                          : item.answer === optionIndex &&
+                              item.answer !== item.question.correctAnswer
+                            ? 'bg-red-100 border border-red-300'
+                            : optionIndex === item.question.correctAnswer
+                              ? 'bg-green-50 border border-green-200'
+                              : 'bg-gray-50 border border-gray-200'
                       }`}
                     >
                       <div className="flex items-start">
-                        <div className="mr-2 font-medium">{String.fromCharCode(65 + optionIndex)}.</div>
+                        <div className="mr-2 font-medium">
+                          {String.fromCharCode(65 + optionIndex)}.
+                        </div>
                         <div>{option}</div>
                       </div>
                     </div>

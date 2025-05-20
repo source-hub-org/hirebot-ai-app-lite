@@ -10,12 +10,15 @@ import { ApiResponse } from '@/types/api'
  * @throws Error when response status is 'error'
  */
 export function handleSuccessResponse<T>(response: AxiosResponse<ApiResponse<T>>): T {
+  console.log('Processing API response in handleSuccessResponse:', response.data)
+
   const { status, message, data } = response.data
 
   if (status === 'error') {
     throw new Error(`API error: ${message || 'Unknown error'}`)
   }
 
+  console.log('Extracted data from API response:', data)
   return data
 }
 

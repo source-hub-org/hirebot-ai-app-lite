@@ -2,7 +2,6 @@
 'use client'
 
 import { useEffect, useState, memo, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import QuestionCard from '@/components/question/QuestionCard'
 import { AnswerSubmission } from '@/types/api'
 import { Button } from '@/components/ui/button'
@@ -18,12 +17,9 @@ interface Submission {
 function QuestionList() {
   // Get candidate_id from context
   const { user } = useAuthContext()
-  
-  // Use Next.js router for navigation
-  const router = useRouter()
 
   // Use the question hook for state management
-  const { questions, isLoading, error, submitAnswers, isSubmitting, submissionResult } =
+  const { questions, isLoading, error, submitAnswersAsync, isSubmitting, submissionResult } =
     useQuestions()
 
   // Use the loading hook for a global loading state
@@ -35,7 +31,7 @@ function QuestionList() {
     answers: [],
   })
 
-  // Initialize empty answers when questions change - only on the initial load or when questions array length changes
+  // Initialize empty answers when questions change - only on the initial load or when question array length changes
   useEffect(() => {
     if (questions && questions.length > 0) {
       // Create initial answers for all questions
@@ -94,19 +90,54 @@ function QuestionList() {
       console.warn('No candidate selected. Using demo ID as fallback.')
     }
 
+    console.log('Starting submission process with data:', submissionData)
+
     // Use withLoading to show a global loading state during submission
     await withLoading(async () => {
-      const result = await submitAnswers(submissionData)
-      
-      // If submission was successful and we have a submission ID, redirect to the results page
-      if (result && result.submission_id) {
-        // Short delay to allow the user to see the success message
-        setTimeout(() => {
-          router.push(`/submissions/${result.submission_id}`)
-        }, 1500)
+      try {
+        // Call the mutation function and await its result
+        const result = await submitAnswersAsync(submissionData)
+        console.log('Submission completed with result:', result)
+
+        // If we have an _id, redirect directly to the result page
+        if (result && result._id) {
+          const redirectUrl = `/submissions/${result._id}`
+          console.log('Will redirect to:', redirectUrl)
+
+          // Directly redirect using window.location.href instead of router.push
+          setTimeout(() => {
+            console.log('Executing redirect now to:', redirectUrl)
+            window.location.href = redirectUrl
+          }, 1500)
+        } else {
+          console.error('Missing _id in result:', result)
+        }
+      } catch (error) {
+        console.error('Error submitting answers:', error)
       }
     })
-  }, [user?.candidate_id, submission, submitAnswers, withLoading, router])
+  }, [user?.candidate_id, submission, submitAnswersAsync, withLoading])
+
+  // Use an effect to handle the redirect after a successful submission
+  // This is a fallback in case the direct redirect in handleSubmit doesn't work
+  useEffect(() => {
+    // Add console log to debug
+    console.log('useEffect triggered with submission result:', submissionResult)
+
+    if (submissionResult && submissionResult._id) {
+      const redirectUrl = `/submissions/${submissionResult._id}`
+      console.log('Fallback redirect will go to:', redirectUrl)
+
+      // Short delay to allow the user to see the success message
+      const timer = setTimeout(() => {
+        console.log('Executing fallback redirect now to:', redirectUrl)
+        // Use window.location.href for a hard redirect
+        window.location.href = redirectUrl
+      }, 1500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [submissionResult])
 
   // Loading state
   if (isLoading) {
