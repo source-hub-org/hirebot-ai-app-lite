@@ -21,22 +21,26 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 ## ✨ Features
 
 - **Candidate Management**
+
   - Add and track candidates through the hiring process
   - Detailed candidate profiles with skills and experience level
   - Organize candidates by position and status
 
 - **Assessment Creation & Management**
+
   - Create customized assessments with targeted questions
   - Filter questions by programming language, topic, and position
   - Set time limits and difficulty levels for assessments
 
 - **Rich Question Types**
+
   - Multiple-choice questions with detailed explanations
   - Free-form essay questions for open-ended responses
   - Code snippets with syntax highlighting for technical evaluations
   - Markdown support for rich text formatting
 
 - **Evaluation & Analysis**
+
   - Automatic scoring of candidate submissions
   - Comprehensive submission analysis with statistics
   - Detailed answer breakdowns and performance metrics
@@ -76,11 +80,13 @@ HireBot AI App Lite follows modern web development practices and architectural p
 ## 🛠 Tech Stack
 
 ### Frontend Framework
+
 - **Next.js 15.3**: React framework with App Router for server components and routing
 - **React 19**: UI library with latest features and improvements
 - **TypeScript 5.8**: Type-safe JavaScript development
 
 ### UI & Styling
+
 - **Tailwind CSS 4.1**: Utility-first CSS framework
 - **Shadcn UI**: Accessible and customizable component library
 - **Radix UI**: Unstyled, accessible UI primitives
@@ -88,17 +94,20 @@ HireBot AI App Lite follows modern web development practices and architectural p
 - **Lucide Icons**: Beautiful, consistent icon set
 
 ### State Management & Data Fetching
+
 - **TanStack Query (React Query)**: Data fetching, caching, and state management
 - **React Context API**: Global state management
 - **React Hook Form**: Form state management with validation
 - **Zod**: TypeScript-first schema validation
 
 ### API & Data Handling
+
 - **Axios**: HTTP client for API requests
 - **React Markdown**: Markdown rendering with syntax highlighting
 - **remark-gfm**: GitHub Flavored Markdown support
 
 ### Development & Testing
+
 - **Bun**: JavaScript runtime and package manager
 - **Turbopack**: Fast development experience
 - **Jest 29**: Testing framework
@@ -115,12 +124,14 @@ HireBot AI App Lite follows modern web development practices and architectural p
 ### Environment Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/hirebot-ai-app-lite.git
    cd hirebot-ai-app-lite
    ```
 
 2. Create a `.env.local` file based on `.env.example`:
+
    ```bash
    cp .env.example .env.local
    ```
@@ -130,11 +141,13 @@ HireBot AI App Lite follows modern web development practices and architectural p
 ### Installation & Development
 
 1. Install dependencies:
+
    ```bash
    bun install
    ```
 
 2. Run the development server:
+
    ```bash
    bun dev
    ```
@@ -144,6 +157,7 @@ HireBot AI App Lite follows modern web development practices and architectural p
 ### Production Build
 
 1. Build the application:
+
    ```bash
    bun build
    ```
@@ -254,6 +268,7 @@ We welcome contributions from the community! Here's how you can help:
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - see the [LICENSE](LICENSE) file for details.
 
 The GPL-3.0 license ensures that:
+
 - You can use, modify, and distribute the software
 - Any modifications must be made available under the same license
 - The source code must be made available when the software is distributed
