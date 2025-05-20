@@ -12,24 +12,37 @@ import {
 } from '@/components/ui/select'
 import { Plus } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
-import { getTopics } from '@/services/topicsService'
-import { getLanguages } from '@/services/languagesService'
-import { getPositions } from '@/services/positionsService'
-import { Topic, Language, Position } from '@/types/api'
 import { useQuestions } from '@/hooks/useQuestions'
 import { useLoading } from '@/hooks/useLoading'
+import { useTopics } from '@/hooks/useTopics'
+import { useLanguages } from '@/hooks/useLanguages'
+import { usePositions } from '@/hooks/usePositions'
 
 export default function AddQuestionPopover() {
   const { withLoading } = useLoading()
   const [open, setOpen] = useState(false)
-  const [topics, setTopics] = useState<Topic[]>([])
-  const [languages, setLanguages] = useState<Language[]>([])
-  const [positions, setPositions] = useState<Position[]>([])
-  const [formLoading, setFormLoading] = useState({
-    topics: false,
-    languages: false,
-    positions: false,
-  })
+
+  // Use React Query hooks for data fetching with caching
+  const { topics, isLoading: topicsLoading, refetch: refetchTopics } = useTopics()
+
+  const {
+    languages,
+    isLoading: languagesLoading,
+    refetch: refetchLanguages,
+  } = useLanguages({ limit: 100 })
+
+  const {
+    positions,
+    isLoading: positionsLoading,
+    refetch: refetchPositions,
+  } = usePositions({ limit: 100 })
+
+  // Combine loading states
+  const formLoading = {
+    topics: topicsLoading,
+    languages: languagesLoading,
+    positions: positionsLoading,
+  }
 
   // Selected values
   const [selectedTopic, setSelectedTopic] = useState<string>('')
@@ -37,36 +50,14 @@ export default function AddQuestionPopover() {
   const [selectedPosition, setSelectedPosition] = useState<string>('')
   const [pageSize, setPageSize] = useState<string>('')
 
-  const fetchData = useCallback(async () => {
-    setFormLoading({ topics: true, languages: true, positions: true })
-
-    try {
-      await withLoading(async () => {
-        // Fetch topics
-        const topicsData = await getTopics()
-        setTopics(topicsData)
-
-        // Fetch languages
-        const languagesData = await getLanguages({ limit: 100 })
-        setLanguages(languagesData.languages)
-
-        // Fetch positions
-        const positionsData = await getPositions({ limit: 100 })
-        setPositions(positionsData.positions)
-      })
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setFormLoading({ topics: false, languages: false, positions: false })
-    }
-  }, [withLoading])
-
-  // Fetch data when the popover opens
+  // Refetch data when the popover opens
   useEffect(() => {
     if (open) {
-      fetchData().then(() => console.log('fetchData called'))
+      refetchTopics().then(() => console.log('Topics refetched'))
+      refetchLanguages().then(() => console.log('Topics fetched'))
+      refetchPositions().then(() => console.log('Topics fetched'))
     }
-  }, [open])
+  }, [open, refetchTopics, refetchLanguages, refetchPositions])
 
   // Use the question hook for state management
   const { searchQuestions, isSearching, searchError } = useQuestions()

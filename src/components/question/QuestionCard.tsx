@@ -66,7 +66,7 @@ export default function QuestionCard({ question, onAnswerChange }: QuestionCardP
 
   return (
     <div className="p-4 border rounded-md space-y-3">
-      <div className="question-text markdown-content font-bold">
+      <div className="question-text markdown-content font-medium">
         <CodeQuestionViewerProps content={question.question}></CodeQuestionViewerProps>
       </div>
       <div className="space-y-2 mt-10">
