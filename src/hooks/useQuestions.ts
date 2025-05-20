@@ -44,11 +44,22 @@ export function useQuestions() {
   // Mutation for submitting answers
   const {
     mutate: submitAnswersMutation,
+    mutateAsync: submitAnswersAsync,
     isPending: isSubmitting,
     error: submitError,
     data: submissionResult,
   } = useMutation({
     mutationFn: (data: SubmissionData) => submitAnswers(data),
+    // Adding onSuccess to ensure the mutation result is properly handled
+    onSuccess: data => {
+      console.log('Mutation onSuccess called with data:', data)
+      // Explicitly update the cache with the submission result
+      queryClient.setQueryData(['submissionResult'], data)
+      console.log('Updated query cache with submission result')
+    },
+    onError: error => {
+      console.error('Submission error:', error)
+    },
   })
 
   return {
@@ -59,6 +70,7 @@ export function useQuestions() {
     isSearching,
     searchError,
     submitAnswers: submitAnswersMutation,
+    submitAnswersAsync,
     isSubmitting,
     submitError,
     submissionResult,

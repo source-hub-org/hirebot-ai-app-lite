@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuthContext } from '@/contexts/AuthProvider'
 import { Button } from '@/components/ui/button'
+import { Lock, Unlock } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 interface HeaderProps {
   pageTitle: string
   pageDescription: string
@@ -31,27 +33,41 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageDescription }) => {
         <div className="flex items-center space-x-4">
           {!isAuthenticated ? (
             <Link href="/login">
-              <Button className="bg-blue-300 hover:bg-blue-400 text-blue-600 font-semibold rounded-md transition-colors duration-300 ease-in-out cursor-pointer">
-                Login
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button className="font-semibold rounded-md transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Sign in to your account</p>
+                </TooltipContent>
+              </Tooltip>
             </Link>
           ) : (
             <>
               <span className="text-base">
-                Look who&apos;s here – <i>{user?.username || user?.email?.split('@')[0] || 'Anonymous'}</i> in
-                the house!
+                Look who&apos;s here –{' '}
+                <i>{user?.username || user?.email?.split('@')[0] || 'Anonymous'}</i> in the house!
               </span>
-              <Button
-                onClick={() => {
-                  if (confirm('Are you sure you want to logout?')) {
-                    logout()
-                    // No need to manually redirect, the logout function will handle it
-                  }
-                }}
-                className="bg-amber-300 hover:bg-amber-400 text-amber-600 font-semibold rounded-md transition-colors duration-300 ease-in-out cursor-pointer"
-              >
-                Logout
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => {
+                      if (confirm('Are you sure you want to logout?')) {
+                        logout()
+                        // No need to manually redirect, the logout function will handle it
+                      }
+                    }}
+                    className="font-semibold rounded-md transition-colors duration-300 ease-in-out cursor-pointer flex items-center gap-2"
+                  >
+                    <Unlock className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Sign out of your account</p>
+                </TooltipContent>
+              </Tooltip>
             </>
           )}
         </div>

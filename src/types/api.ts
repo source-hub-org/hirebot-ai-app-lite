@@ -153,17 +153,52 @@ export interface AnswerSubmission {
 }
 
 /**
- * Submission entity
+ * Submission question with detailed question information
+ */
+export interface SubmissionQuestion {
+  question_id: string
+  answer: number | null
+  other: string
+  point: number
+  is_skip: number
+  question: {
+    _id: string
+    question: string
+    options: string[]
+    correctAnswer: number
+    difficulty: string
+    category: string
+    topic: string
+    topic_id: string
+  }
+}
+
+/**
+ * Submission entity with detailed information
  */
 export interface Submission {
-  _id?: string
+  _id: string
   candidate_id: string
-  answers: Array<{
-    question_id: string
-    selected_options: number[]
-    skipped: boolean
-  }>
-  score: number
+  answers: SubmissionQuestion[]
+  essay?: {
+    question: string | null
+    answer: string | null
+    is_skip: number
+  }
+  review?: {
+    comment: string
+    status: string
+  }
+  candidate?: {
+    _id: string
+    full_name: string
+    email: string
+    phone_number: string
+    skills: string[]
+    programming_languages: string[]
+    interview_level: string
+    status: string
+  }
   createdAt?: string
   updatedAt?: string
 }

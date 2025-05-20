@@ -1,6 +1,12 @@
 // src/services/questionsService.ts
 import api from '../libs/axiosConfig'
-import { ApiResponse, PaginatedResponse, Question, QuestionSearchParams } from '@/types/api'
+import {
+  ApiResponse,
+  PaginatedResponse,
+  Question,
+  QuestionSearchParams,
+  Submission,
+} from '@/types/api'
 import { buildQueryString } from '@/helpers/buildQueryString'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
@@ -184,7 +190,7 @@ export async function submitAnswers(submission: {
     point: number
     is_skip: number
   }>
-}): Promise<{ message: string; score?: number }> {
+}): Promise<{ message: string; score?: number; _id?: string }> {
   try {
     // Create a custom config for this specific request
     const config = {
@@ -192,9 +198,43 @@ export async function submitAnswers(submission: {
       baseURL: '',
     }
 
-    const response = await api.post<ApiResponse<{ message: string; score: number }>>(
+    console.log('Submitting answers with data:', submission)
+
+    const response = await api.post<ApiResponse<{ message: string; score: number; _id: string }>>(
       '/api/proxy/submissions',
       submission,
+      config
+    )
+
+    console.log('API response:', response.data)
+
+    const result = handleSuccessResponse(response)
+    console.log('Processed result:', result)
+
+    return result
+  } catch (error) {
+    console.error('Error in submitAnswers:', error)
+    return handleErrorResponse(error)
+  }
+}
+
+/**
+ * Fetches a submission by ID
+ *
+ * @param id - Submission ID
+ * @param enrich - Whether to enrich the submission with additional data (default: "true")
+ * @returns Promise resolving to the submission details
+ */
+export async function getSubmissionById(id: string, enrich: boolean = true): Promise<Submission> {
+  try {
+    // Create a custom config for this specific request
+    const config = {
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    const response = await api.get<ApiResponse<Submission>>(
+      `/api/proxy/submissions/${id}?enrich=${enrich.toString()}`,
       config
     )
     return handleSuccessResponse(response)
@@ -211,6 +251,7 @@ const questionService = {
   deleteQuestion,
   generateQuestions,
   submitAnswers,
+  getSubmissionById,
 }
 
 export default questionService

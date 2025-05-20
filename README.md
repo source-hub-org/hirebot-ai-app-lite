@@ -9,14 +9,19 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 - **Interactive Question Interface**: Multiple-choice questions with explanations and free-form text answers
 - **Code Snippets Support**: Questions can include formatted code snippets for technical evaluations
 - **Submission Scoring**: Automatic scoring of candidate submissions
+- **Detailed Results View**: Comprehensive submission analysis with statistics and answer breakdowns
+- **Essay Questions**: Support for free-form essay questions in addition to multiple-choice
+- **Candidate Profiles**: Detailed candidate information including skills and experience level
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
-- **UI Components**: Shadcn UI
-- **State Management**: React Context API
-- **API Integration**: Custom API services for questions, candidates, and submissions
-- **Testing**: Jest, React Testing Library
+- **Frontend**: Next.js 15.3, React 19, TypeScript 5.8, Tailwind CSS 4.1
+- **UI Components**: Shadcn UI with Radix UI primitives
+- **State Management**: React Context API and React Query
+- **API Integration**: Axios for custom API services
+- **Markdown Support**: React Markdown with syntax highlighting
+- **Testing**: Jest 29, React Testing Library
+- **Development**: Turbopack for faster development experience
 
 ## Screenshots
 
@@ -26,7 +31,7 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 
 ### Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 20.x or higher
 - [Bun](https://bun.sh/) runtime
 
 ### Installation
@@ -54,11 +59,14 @@ HireBot AI App Lite is a streamlined technical assessment platform for evaluatin
 
 ## Project Structure
 
-- `/src/app`: Next.js app router pages
+- `/src/app`: Next.js app router pages and layouts
 - `/src/components`: Reusable UI components
-- `/src/components/common/__tests__`: Component tests
+  - `/src/components/ui`: Shadcn UI components
+  - `/src/components/layout`: Layout components
+  - `/src/components/common/__tests__`: Component tests
 - `/src/contexts`: React context providers
 - `/src/services`: API service functions
+- `/src/hooks`: Custom React hooks
 - `/src/types`: TypeScript type definitions
 - `/src/lib`: Utility functions
 
@@ -100,3 +108,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Built with [Next.js](https://nextjs.org)
 - UI components from [Shadcn UI](https://ui.shadcn.com)
 - Icons from [Lucide](https://lucide.dev)
+- Query management with [TanStack Query](https://tanstack.com/query)
