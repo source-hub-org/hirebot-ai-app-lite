@@ -6,10 +6,6 @@
 
 HireBot AI App Lite is a streamlined technical assessment platform for evaluating candidates' programming skills. This application allows recruiters and hiring managers to create customized assessments, manage candidates, and evaluate their technical knowledge efficiently.
 
-<div align="center">
-  <img src="./assets/screenshot.png" alt="HireBot AI App Lite Screenshot" width="800"/>
-</div>
-
 ## 📋 Table of Contents
 
 - [Features](./docs/features.md)
@@ -49,6 +45,12 @@ bun dev
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) to see the application running.
+
+## Screenshots
+
+<div align="center">
+  <img src="./assets/screenshot.png" alt="HireBot AI App Lite Screenshot" width="800"/>
+</div>
 
 ## 📄 License
 
