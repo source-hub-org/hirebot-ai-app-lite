@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useLoading } from '@/hooks/useLoading'
 import { LoginCredentials as BaseLoginCredentials } from '@/types/auth'
@@ -13,10 +13,31 @@ interface LoginCredentials extends BaseLoginCredentials {
 }
 
 /**
+ * Component to handle search params with Suspense
+ */
+function SearchParamsHandler({
+  setSuccessMessage,
+}: {
+  setSuccessMessage: (message: string | null) => void
+}) {
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams) {
+      const registered = searchParams.get('registered')
+      if (registered === 'success') {
+        setSuccessMessage('Registration successful! You can now log in with your credentials.')
+      }
+    }
+  }, [searchParams, setSuccessMessage])
+
+  return null
+}
+
+/**
  * Login form component
  */
 export function LoginForm({ className }: React.ComponentPropsWithoutRef<'form'>) {
-  const searchParams = useSearchParams()
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: '',
     password: '',
@@ -25,16 +46,6 @@ export function LoginForm({ className }: React.ComponentPropsWithoutRef<'form'>)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const { login, isLoading, error } = useAuth()
   const { withLoading } = useLoading()
-
-  // Check for registration success message in URL
-  useEffect(() => {
-    if (searchParams) {
-      const registered = searchParams.get('registered')
-      if (registered === 'success') {
-        setSuccessMessage('Registration successful! You can now log in with your credentials.')
-      }
-    }
-  }, [searchParams])
 
   /**
    * Handles input changes
@@ -162,22 +173,27 @@ export function LoginForm({ className }: React.ComponentPropsWithoutRef<'form'>)
   )
 
   return (
-    <AuthForm
-      className={className}
-      title="Login to your account"
-      subtitle="Enter your email below to login to your account"
-      fields={loginFields}
-      values={credentials}
-      errors={errors}
-      isLoading={isLoading}
-      successMessage={successMessage}
-      errorMessage={error || errors.general}
-      submitButtonText="Login"
-      loadingButtonText="Logging in..."
-      onChange={handleChange}
-      onSubmit={handleSubmit}
-      extraContent={extraContent}
-      footerContent={footerContent}
-    />
+    <>
+      <Suspense fallback={null}>
+        <SearchParamsHandler setSuccessMessage={setSuccessMessage} />
+      </Suspense>
+      <AuthForm
+        className={className}
+        title="Login to your account"
+        subtitle="Enter your email below to login to your account"
+        fields={loginFields}
+        values={credentials}
+        errors={errors}
+        isLoading={isLoading}
+        successMessage={successMessage}
+        errorMessage={error || errors.general}
+        submitButtonText="Login"
+        loadingButtonText="Logging in..."
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        extraContent={extraContent}
+        footerContent={footerContent}
+      />
+    </>
   )
 }
