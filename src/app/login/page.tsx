@@ -32,9 +32,10 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden bg-muted lg:block">
         <Image
-          src="/login-bg.png"
+          src="/login-bg.jpeg"
           alt="Background image"
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="filter grayscale brightness-[0.75] absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
           priority
         />

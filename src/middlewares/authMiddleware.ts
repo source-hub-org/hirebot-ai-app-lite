@@ -36,16 +36,3 @@ function isPublicRoute(pathname: string): boolean {
   // All other routes (including /submissions/new) require authentication
   return false
 }
-
-// See "Matching Paths" below to learn more
-export const authConfig = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
-}
