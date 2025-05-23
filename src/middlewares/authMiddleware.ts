@@ -22,7 +22,7 @@ export function authMiddleware(request: NextRequest) {
 // Define which routes should be public (accessible without authentication)
 function isPublicRoute(pathname: string): boolean {
   // Exact matches for root and simple routes
-  const exactPublicRoutes = ['/login', '/about', '/contact', '/']
+  const exactPublicRoutes = ['/login', '/register', '/about', '/contact', '/']
   if (exactPublicRoutes.includes(pathname)) {
     return true
   }

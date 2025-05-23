@@ -6,6 +6,15 @@ import tokenStorage from '@/utils/tokenStorage'
 import { handleSuccessResponse, handleErrorResponse } from '@/helpers/handleApiResponse'
 
 /**
+ * Registration data interface
+ */
+export interface RegistrationData {
+  email: string
+  username: string
+  password: string
+}
+
+/**
  * Retrieves environment variables for authentication
  */
 const getAuthConfig = () => {
@@ -150,12 +159,43 @@ export function initializeAuth(): boolean {
   return tokenStorage.hasAccessToken()
 }
 
+/**
+ * Registers a new user
+ *
+ * @param registrationData - User registration data
+ * @returns Promise resolving to the registration response
+ */
+export async function register(registrationData: RegistrationData): Promise<UserProfile> {
+  try {
+    // Create a custom config for this specific request
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Override the baseURL to use the Next.js API route
+      baseURL: '',
+    }
+
+    // Use the absolute path to the Next.js API route
+    const response = await api.post<ApiResponse<UserProfile>>(
+      '/api/proxy/register',
+      registrationData,
+      config
+    )
+    return handleSuccessResponse(response)
+  } catch (error) {
+    console.error('Registration error:', error)
+    return handleErrorResponse(error)
+  }
+}
+
 const authService = {
   login,
   logout,
   refreshToken,
   getCurrentUser,
   initializeAuth,
+  register,
 }
 
 export default authService
