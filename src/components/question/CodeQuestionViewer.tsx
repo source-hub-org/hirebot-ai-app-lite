@@ -7,15 +7,23 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 interface CodeQuestionViewerProps {
   content: string
+  language?: string
 }
 
-const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
+const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content, language = 'shell' }) => {
   const raw = content.replace(/\\n/g, '\n')
 
   const parts = raw.split(/(```[\s\S]*?```)/g)
 
   const renderedParts = parts.map((part, index) => {
     if (part.startsWith('```')) {
+      // Check if there's a language specified after the triple backticks
+      let processedPart = part
+      if (part.startsWith('```\n')) {
+        // No language specified, insert the default language
+        processedPart = part.replace('```\n', `\`\`\`${language}\n`)
+      }
+
       return (
         <ReactMarkdown
           key={index}
@@ -46,7 +54,7 @@ const CodeQuestionViewer: React.FC<CodeQuestionViewerProps> = ({ content }) => {
             },
           }}
         >
-          {part}
+          {processedPart}
         </ReactMarkdown>
       )
     } else {
