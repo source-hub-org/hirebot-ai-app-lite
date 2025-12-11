@@ -6,13 +6,9 @@ COPY package.json bun.lockb* ./
 
 RUN bun install --frozen-lockfile
 
-COPY . .
-
-RUN bun run build
-
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1
 
 EXPOSE 3000
 
-CMD ["bun", "start"]
+CMD ["bun", "dev"]
