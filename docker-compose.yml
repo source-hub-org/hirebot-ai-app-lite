@@ -1,5 +1,5 @@
 services:
-  app:
+  hirebot_app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -7,8 +7,17 @@ services:
     ports:
       - '${APP_PORT:-3000}:3000'
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
       - NEXT_PUBLIC_AUTH_CLIENT_ID=${NEXT_PUBLIC_AUTH_CLIENT_ID}
       - NEXT_PUBLIC_AUTH_CLIENT_SECRET=${NEXT_PUBLIC_AUTH_CLIENT_SECRET}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - dev_tools
 
+networks:
+  dev_tools:
+    external: true
